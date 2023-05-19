@@ -16,9 +16,13 @@
 .guess-table .ant-table {
     border: 1px solid #d9d9d9;
     border-radius: 8px;
-    overflow: hidden;
+    overflow: scroll;
 }
 
-/* .guess-table .ant-table-container {
-    padding-bottom: 8px;
-} */
+.guess-table .ant-tag.ant-tooltip-open {
+    font-size: 12px
+}
+
+.guess-table-col-title {
+    min-width: 150px;
+}

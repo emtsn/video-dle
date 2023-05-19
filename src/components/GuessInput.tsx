@@ -1,6 +1,6 @@
 import { AutoComplete } from 'antd';
 import { DefaultOptionType } from 'antd/es/select';
-import { useEffect, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { VideoData } from '../models/video-data';
 
 const SEARCH_MIN_CHAR = 3 as const;
@@ -13,11 +13,9 @@ interface OptionWithSearchKey extends DefaultOptionType {
 };
 
 export default function GuessInput({ vidData, handleSelect, disabled }: { vidData: VideoData[], handleSelect: (videoId: string) => void, disabled?: boolean }): React.ReactElement {
-    const [vidDataOptions, setVidDataOptions] = useState<OptionWithSearchKey[]>([]);
     const [options, setOptions] = useState<DefaultOptionType[]>([]);
-
-    useEffect(() => {
-        setVidDataOptions(vidData.map(vid => {
+    const vidDataOptions: OptionWithSearchKey[] = useMemo(() => {
+        return vidData.map(vid => {
             const searchTitle = vid.title.toUpperCase();
             const searchUploaderName = vid.uploaderName.toUpperCase();
             return {
@@ -26,11 +24,10 @@ export default function GuessInput({ vidData, handleSelect, disabled }: { vidDat
                 value: vid.title,
                 searchKeys: [...searchTitle.split(' '), ...searchUploaderName.split(' '), searchTitle.replaceAll(' ', ''), searchUploaderName.replaceAll(' ', '')]
             };
-        }));
+        });
     }, [vidData]);
-
-    function handleSearch(value: string | undefined): void {
-        if (!value || value.length < SEARCH_MIN_CHAR || vidData.length <= 0) {
+    const handleSearch = useCallback((value: string | undefined): void => {
+        if (!value || value.length < SEARCH_MIN_CHAR || vidDataOptions.length <= 0) {
             setOptions([]);
         } else {
             const searchValues: string[] = value.split(' ').filter(x => x.length >= SEARCH_MIN_CHAR);
@@ -40,7 +37,7 @@ export default function GuessInput({ vidData, handleSelect, disabled }: { vidDat
                 setOptions(vidDataOptions.filter(option => searchValues.every(searchValue => option.searchKeys.some(searchKey => searchKey.includes(searchValue.toUpperCase())))));
             }
         }
-    }
+    }, [vidDataOptions]);
 
     return <AutoComplete
         className="guess-input"

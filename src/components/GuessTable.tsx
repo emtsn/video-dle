@@ -1,10 +1,11 @@
 import React, { ReactElement } from 'react';
-import { TableColumnsType, ConfigProvider, Empty, Space, Table, Tag } from 'antd';
+import { TableColumnsType, ConfigProvider, Empty, Space, Table, Tag, Tooltip } from 'antd';
 import { VideoData } from '../models/video-data';
 import { AnswerData } from '../models/answer-data';
 import { ArrowDownOutlined, ArrowUpOutlined, SearchOutlined, } from '@ant-design/icons';
 import { green, orange, red } from '@ant-design/colors';
 import './GuessTable.css';
+import { Dictionary, TagDescDictionary } from '../models/tags';
 
 const NUM_BILLION = 1000000000 as const;
 const NUM_MILLION = 1000000 as const;
@@ -36,7 +37,22 @@ function timeFormatter(timeSeconds: number): string {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
-function tagsFormatter(tags: string[]): ReactElement {
+/**
+ * Format a set of tags
+ * @param tags
+ * @param tagTooltipDict
+ * @returns
+ */
+function tagsFormatter(tags: string[], tagTooltipDict?: Dictionary): ReactElement {
+    if (tagTooltipDict !== undefined) {
+        return <Space direction='vertical'>{tags.map(tagText => {
+            const tagElement = <Tag style={{ border: '1px solid #000000' }} color='default' bordered={true}>{tagText}</Tag>;
+            // if (tagTooltipDict[tagText]) {
+            //     return <Tooltip placement='right' title={tagTooltipDict[tagText]}>{tagElement}</Tooltip>;
+            // }
+            return tagElement;
+        })}</ Space>;
+    }
     return <Space direction='vertical'>{tags.map(x => <Tag style={{ border: '1px solid #000000' }} color='default' bordered={true}>{x}</Tag>)}</ Space>;
 }
 
@@ -54,7 +70,7 @@ function dateFormatter(date: string): string {
  * Where the answer is relative to the guess
  */
 enum AnswerRelative {
-    NotApplicable,
+    None,
     Equal,
     NotEqual,
     Close,
@@ -70,8 +86,9 @@ enum AnswerRelative {
  * @param guessValue
  * @returns
  */
-function stringsToAnswerRelative(answerValue: string | undefined, guessValue: string): AnswerRelative {
-    if (answerValue === undefined) return AnswerRelative.NotApplicable;
+function stringsToAnswerRelative(answerValue: string | undefined, guessValue: string | undefined): AnswerRelative {
+    if (answerValue === undefined && guessValue === undefined) return AnswerRelative.Equal;
+    if (answerValue === undefined || guessValue === undefined) return AnswerRelative.NotEqual;
     return answerValue === guessValue ? AnswerRelative.Equal : AnswerRelative.NotEqual;
 }
 
@@ -85,8 +102,9 @@ const NUM_CLOSE_THRESHOLD = 0.30 as const;
  * @param guessValue
  * @returns
  */
-function numbersToAnswerRelative(answerValue: number | undefined, guessValue: number): AnswerRelative {
-    if (answerValue === undefined) return AnswerRelative.NotApplicable;
+function numbersToAnswerRelative(answerValue: number | undefined, guessValue: number | undefined): AnswerRelative {
+    if (answerValue === undefined) answerValue = 0;
+    if (guessValue === undefined) guessValue = 0;
     const diff = answerValue - guessValue;
     if (diff < 1 && diff > -1) return AnswerRelative.Equal;
     if (guessValue <= answerValue + (answerValue * NUM_CLOSE_THRESHOLD) && guessValue >= answerValue - (answerValue * NUM_CLOSE_THRESHOLD)) {
@@ -104,11 +122,9 @@ const DATE_CLOSE_THRESHOLD = 30 as const;
  * @param guessValue
  * @returns
  */
-function dateToAnswerRelative(answerValue: string | undefined, guessValue: string): AnswerRelative {
-    if (answerValue === undefined) return AnswerRelative.NotApplicable;
-    if (answerValue === guessValue) return AnswerRelative.Equal;
-    const answerValueDate = Date.parse(answerValue);
-    const guessValueDate = Date.parse(guessValue);
+function dateToAnswerRelative(answerValue: string | undefined, guessValue: string | undefined): AnswerRelative {
+    const answerValueDate = answerValue !== undefined ? Date.parse(answerValue) : 0;
+    const guessValueDate = guessValue !== undefined ? Date.parse(guessValue) : 0;
     const dayDiff = Math.abs(answerValueDate - guessValueDate) / MS_IN_DAY;
     if (dayDiff <= DATE_CLOSE_THRESHOLD) {
         return answerValueDate > guessValueDate ? AnswerRelative.SlightlyAbove : AnswerRelative.SlightlyBelow;
@@ -122,14 +138,16 @@ function dateToAnswerRelative(answerValue: string | undefined, guessValue: strin
  * @param answerTags
  * @returns
  */
-function tagsToAnswerRelative(answerTags: string[], guessTags: string[]): AnswerRelative {
+function tagsToAnswerRelative(answerTags: string[] | undefined, guessTags: string[] | undefined): AnswerRelative {
+    if (answerTags === undefined) answerTags = [];
+    if (guessTags === undefined) guessTags = [];
     if (guessTags.length === 0 && answerTags.length === 0) return AnswerRelative.Equal;
     let correctGuessCount = 0;
     for (const guessTag of guessTags) {
         if (answerTags.includes(guessTag)) correctGuessCount++;
     }
     if (correctGuessCount < 1) return AnswerRelative.NotEqual;
-    if (correctGuessCount < answerTags.length) return AnswerRelative.Close;
+    if (correctGuessCount < answerTags.length || correctGuessCount !== guessTags.length) return AnswerRelative.Close;
     return AnswerRelative.Equal;
 }
 
@@ -154,7 +172,7 @@ function colouredCell(label: string | React.ReactElement, ansRelative: AnswerRel
     let bgColor: string | undefined = undefined;
     let icon: React.ReactElement | undefined = undefined;
     switch (ansRelative) {
-        case AnswerRelative.NotApplicable:
+        case AnswerRelative.None:
             break;
         case AnswerRelative.Equal:
             bgColor = COLOR_GREEN;
@@ -193,53 +211,59 @@ function colouredCell(label: string | React.ReactElement, ansRelative: AnswerRel
     };
 }
 
-export default function GuessTable({ vidData, guessedVideos, answer }: { vidData: Record<string, VideoData>, guessedVideos: string[], answer: AnswerData }): React.ReactElement {
-    const data = guessedVideos.map(x => vidData[x]);
-    const answerData = vidData[answer.videoId];
+export default function GuessTable({ vidData, guessedVideos, answer }: { vidData: Record<string, VideoData>, guessedVideos: string[], answer: AnswerData | null }): React.ReactElement {
+    const data = guessedVideos.map((x, index) => {
+        return {
+            key: guessedVideos.length - 1 - index + '-' + vidData[x].videoId,
+            ...vidData[x]
+        };
+    });
+    const answerData = answer != null ? vidData[answer.videoId] : null;
     const columns: TableColumnsType<VideoData> = [
         {
             title: 'Title',
             dataIndex: 'title',
             key: 'title',
             width: '30%',
-            render: (title) => colouredCell(title, AnswerRelative.NotApplicable)
+            className: 'guess-table-col-title',
+            render: (title) => colouredCell(title, AnswerRelative.None)
         },
         {
             title: 'Uploader',
             dataIndex: 'uploaderName',
             key: 'uploaderName',
             width: '15%',
-            render: (uploaderName) => colouredCell(uploaderName, stringsToAnswerRelative(answerData.uploaderName, uploaderName))
+            render: (uploaderName) => colouredCell(uploaderName, stringsToAnswerRelative(answerData?.uploaderName, uploaderName))
         },
         {
             title: 'Length',
             dataIndex: 'length',
             key: 'length',
-            render: (length) => colouredCell(timeFormatter(length), numbersToAnswerRelative(answerData.length, length))
+            render: (length) => colouredCell(timeFormatter(length), numbersToAnswerRelative(answerData?.length, length))
         },
         {
             title: 'Views',
             dataIndex: 'views',
             key: 'views',
-            render: (views) => colouredCell(countFormatter(views), numbersToAnswerRelative(answerData.views, views))
+            render: (views) => colouredCell(countFormatter(views), numbersToAnswerRelative(answerData?.views, views))
         },
         {
             title: 'Likes',
             dataIndex: 'likes',
             key: 'likes',
-            render: (likes) => colouredCell(countFormatter(likes), numbersToAnswerRelative(answerData.likes, likes))
+            render: (likes) => colouredCell(countFormatter(likes), numbersToAnswerRelative(answerData?.likes, likes))
         },
         {
             title: 'Comments',
             dataIndex: 'commentCount',
             key: 'commentCount',
-            render: (comments) => colouredCell(countFormatter(comments), numbersToAnswerRelative(answerData.commentCount, comments))
+            render: (comments) => colouredCell(countFormatter(comments), numbersToAnswerRelative(answerData?.commentCount, comments))
         },
         {
             title: 'Uploaded',
             dataIndex: 'uploadDate',
             key: 'uploadDate',
-            render: (uploadDate) => colouredCell(dateFormatter(uploadDate), dateToAnswerRelative(answerData.uploadDate, uploadDate))
+            render: (uploadDate) => colouredCell(dateFormatter(uploadDate), dateToAnswerRelative(answerData?.uploadDate, uploadDate))
         },
         // {
         //     title: 'Original Creator',
@@ -250,10 +274,11 @@ export default function GuessTable({ vidData, guessedVideos, answer }: { vidData
             title: 'Categories',
             dataIndex: 'categories',
             key: 'categories',
-            render: (categories) => colouredCell(tagsFormatter(categories), tagsToAnswerRelative(answerData.categories, categories))
+            render: (categories) => colouredCell(tagsFormatter(categories, TagDescDictionary), tagsToAnswerRelative(answerData?.categories, categories))
         }
     ];
     return <ConfigProvider renderEmpty={() => <Empty image={<SearchOutlined />} description="Enter a guess in the search to start!" />}>
-        <Table className='guess-table' dataSource={data} columns={columns} pagination={false}></Table>
+        <Table className='guess-table' rowKey={'key'} dataSource={data} columns={columns} pagination={false}>
+        </Table>
     </ConfigProvider>;
 }
