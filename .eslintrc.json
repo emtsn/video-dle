@@ -2,5 +2,39 @@
     "extends": [
         "react-app",
         "react-app/jest"
-    ]
+    ],
+    "rules": {
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "curly": [
+            "error",
+            "multi-line"
+        ],
+        "brace-style": [
+            "error",
+            "1tbs"
+        ],
+        "max-lines": [
+            "error",
+            1000
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "keyword-spacing": "error",
+        "arrow-spacing": "error",
+        "space-unary-ops": "error",
+        "no-trailing-spaces": "error",
+        "@typescript-eslint/no-inferrable-types": "warn",
+        "@typescript-eslint/explicit-function-return-type": [
+            "error",
+            {
+                "allowExpressions": true,
+                "allowTypedFunctionExpressions": true
+            }
+        ]
+    }
 }

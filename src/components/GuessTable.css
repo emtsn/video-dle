@@ -1,0 +1,24 @@
+.guess-table td.ant-table-cell {
+    padding: 0 !important;
+    border-radius: 0px;
+}
+
+.guess-table .ant-empty {
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+.guess-table .ant-empty .anticon {
+    color: #3b3b3b;
+    font-size: 84px;
+}
+
+.guess-table .ant-table {
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* .guess-table .ant-table-container {
+    padding-bottom: 8px;
+} */
