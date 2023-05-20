@@ -141,6 +141,7 @@ const DATE_CLOSE_THRESHOLD = 30 as const;
  * @returns
  */
 function dateToAnswerRelative(answerValue: string | undefined, guessValue: string | undefined): AnswerRelative {
+    if (answerValue === guessValue) return AnswerRelative.Equal;
     const answerValueDate = answerValue !== undefined ? Date.parse(answerValue) : 0;
     const guessValueDate = guessValue !== undefined ? Date.parse(guessValue) : 0;
     const dayDiff = Math.abs(answerValueDate - guessValueDate) / MS_IN_DAY;
