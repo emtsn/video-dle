@@ -27,15 +27,15 @@ export const VideoCategories = [
     'Vlog',
 ] as const;
 
-export type VideoCategoriesType = typeof VideoCategories[number];
+export type VideoCategoriesType = (typeof VideoCategories)[number];
 
 export interface Dictionary {
-    [Key: string]: string
+    [Key: string]: string;
 }
 
 export type VideoCategoriesDictionary = {
-    [Key in VideoCategoriesType]: string
-}
+    [Key in VideoCategoriesType]: string;
+};
 
 export const TagDescDictionary: VideoCategoriesDictionary = {
     Activism: '',
@@ -63,5 +63,5 @@ export const TagDescDictionary: VideoCategoriesDictionary = {
     Shorts: 'Originally created for short video platforms like Vine, TikTok, etc...',
     Sports: 'Features a sport being played or an athlete',
     Technology: 'Features and focuses on tech device, software, company, or person',
-    Vlog: 'A diary-style video with a single person talking directly to the camera'
+    Vlog: 'A diary-style video with a single person talking directly to the camera',
 } as const;

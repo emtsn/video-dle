@@ -6,53 +6,75 @@ import { VideoData } from '../models/video-data';
 const SEARCH_MIN_CHAR = 3 as const;
 
 interface OptionWithSearchKey extends DefaultOptionType {
-    key: string,
-    label: string,
-    value: string,
-    searchKeys: string[]
+    key: string;
+    label: string;
+    value: string;
+    searchKeys: string[];
+}
+
+type Props = {
+    vidData: VideoData[];
+    handleSelect: (videoId: string) => void;
+    disabled?: boolean;
 };
 
-export default function GuessInput({ vidData, handleSelect, disabled }: { vidData: VideoData[], handleSelect: (videoId: string) => void, disabled?: boolean }): React.ReactElement {
+export default function GuessInput({ vidData, handleSelect, disabled }: Props): React.ReactElement {
     const [options, setOptions] = useState<DefaultOptionType[]>([]);
     const vidDataOptions: OptionWithSearchKey[] = useMemo(() => {
-        return vidData.map(vid => {
+        return vidData.map((vid) => {
             const searchTitle = vid.title.toUpperCase();
             const searchUploaderName = vid.uploaderName.toUpperCase();
             return {
                 key: vid.videoId,
                 label: vid.title,
                 value: vid.title,
-                searchKeys: [...searchTitle.split(' '), ...searchUploaderName.split(' '), searchTitle.replaceAll(' ', ''), searchUploaderName.replaceAll(' ', '')]
+                searchKeys: [
+                    ...searchTitle.split(' '),
+                    ...searchUploaderName.split(' '),
+                    searchTitle.replaceAll(' ', ''),
+                    searchUploaderName.replaceAll(' ', ''),
+                ],
             };
         });
     }, [vidData]);
-    const handleSearch = useCallback((value: string | undefined): void => {
-        if (!value || value.length < SEARCH_MIN_CHAR || vidDataOptions.length <= 0) {
-            setOptions([]);
-        } else {
-            const searchValues: string[] = value.split(' ').filter(x => x.length >= SEARCH_MIN_CHAR);
-            if (searchValues.length < 1) {
+    const handleSearch = useCallback(
+        (value: string | undefined): void => {
+            if (!value || value.length < SEARCH_MIN_CHAR || vidDataOptions.length <= 0) {
                 setOptions([]);
             } else {
-                setOptions(vidDataOptions.filter(option => searchValues.every(searchValue => option.searchKeys.some(searchKey => searchKey.includes(searchValue.toUpperCase())))));
+                const searchValues: string[] = value.split(' ').filter((x) => x.length >= SEARCH_MIN_CHAR);
+                if (searchValues.length < 1) {
+                    setOptions([]);
+                } else {
+                    setOptions(
+                        vidDataOptions.filter((option) =>
+                            searchValues.every((searchValue) =>
+                                option.searchKeys.some((searchKey) => searchKey.includes(searchValue.toUpperCase()))
+                            )
+                        )
+                    );
+                }
             }
-        }
-    }, [vidDataOptions]);
+        },
+        [vidDataOptions]
+    );
 
-    return <AutoComplete
-        className="guess-input"
-        options={options}
-        onSearch={handleSearch}
-        onSelect={(_, option): void => handleSelect(option.key)}
-        defaultOpen={false}
-        showSearch={true}
-        filterOption={false}
-        size={'large'}
-        style={{ width: '100%' }}
-        disabled={!!disabled}
-        notFoundContent={false}
-        placeholder="Video Title..."
-    >
-        {/* <Input.Search size="large" placeholder="Video Title..." enterButton /> */}
-    </AutoComplete>;
+    return (
+        <AutoComplete
+            className="guess-input"
+            options={options}
+            onSearch={handleSearch}
+            onSelect={(_, option): void => handleSelect(option.key)}
+            defaultOpen={false}
+            showSearch={true}
+            filterOption={false}
+            size={'large'}
+            style={{ width: '100%' }}
+            disabled={!!disabled}
+            notFoundContent={false}
+            placeholder="Video Title..."
+        >
+            {/* <Input.Search size="large" placeholder="Video Title..." enterButton /> */}
+        </AutoComplete>
+    );
 }

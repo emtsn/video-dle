@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { TableColumnsType, ConfigProvider, Empty, Space, Table, Tag, Tooltip } from 'antd';
 import { VideoData } from '../models/video-data';
 import { AnswerData } from '../models/answer-data';
-import { ArrowDownOutlined, ArrowUpOutlined, SearchOutlined, } from '@ant-design/icons';
+import { ArrowDownOutlined, ArrowUpOutlined, SearchOutlined } from '@ant-design/icons';
 import { green, orange, red } from '@ant-design/colors';
 import './GuessTable.css';
 import { Dictionary, TagDescDictionary } from '../models/tags';
@@ -45,15 +45,31 @@ function timeFormatter(timeSeconds: number): string {
  */
 function tagsFormatter(tags: string[], tagTooltipDict?: Dictionary): ReactElement {
     if (tagTooltipDict !== undefined) {
-        return <Space direction='vertical'>{tags.map(tagText => {
-            const tagElement = <Tag style={{ border: '1px solid #000000' }} color='default' bordered={true}>{tagText}</Tag>;
-            // if (tagTooltipDict[tagText]) {
-            //     return <Tooltip placement='right' title={tagTooltipDict[tagText]}>{tagElement}</Tooltip>;
-            // }
-            return tagElement;
-        })}</ Space>;
+        return (
+            <Space direction="vertical">
+                {tags.map((tagText) => {
+                    const tagElement = (
+                        <Tag style={{ border: '1px solid #000000' }} color="default" bordered={true}>
+                            {tagText}
+                        </Tag>
+                    );
+                    // if (tagTooltipDict[tagText]) {
+                    //     return <Tooltip placement='right' title={tagTooltipDict[tagText]}>{tagElement}</Tooltip>;
+                    // }
+                    return tagElement;
+                })}
+            </Space>
+        );
     }
-    return <Space direction='vertical'>{tags.map(x => <Tag style={{ border: '1px solid #000000' }} color='default' bordered={true}>{x}</Tag>)}</ Space>;
+    return (
+        <Space direction="vertical">
+            {tags.map((x) => (
+                <Tag style={{ border: '1px solid #000000' }} color="default" bordered={true}>
+                    {x}
+                </Tag>
+            ))}
+        </Space>
+    );
 }
 
 /**
@@ -92,8 +108,7 @@ function stringsToAnswerRelative(answerValue: string | undefined, guessValue: st
     return answerValue === guessValue ? AnswerRelative.Equal : AnswerRelative.NotEqual;
 }
 
-
-const NUM_CLOSE_THRESHOLD = 0.30 as const;
+const NUM_CLOSE_THRESHOLD = 0.3 as const;
 
 /**
  * Get AnswerRelative based on a number answerValue and guessValue
@@ -107,7 +122,10 @@ function numbersToAnswerRelative(answerValue: number | undefined, guessValue: nu
     if (guessValue === undefined) guessValue = 0;
     const diff = answerValue - guessValue;
     if (diff < 1 && diff > -1) return AnswerRelative.Equal;
-    if (guessValue <= answerValue + (answerValue * NUM_CLOSE_THRESHOLD) && guessValue >= answerValue - (answerValue * NUM_CLOSE_THRESHOLD)) {
+    if (
+        guessValue <= answerValue + answerValue * NUM_CLOSE_THRESHOLD &&
+        guessValue >= answerValue - answerValue * NUM_CLOSE_THRESHOLD
+    ) {
         return answerValue > guessValue ? AnswerRelative.SlightlyAbove : AnswerRelative.SlightlyBelow;
     }
     return answerValue > guessValue ? AnswerRelative.Above : AnswerRelative.Below;
@@ -157,10 +175,10 @@ const COLOR_ORANGE = orange[2];
 
 type RenderedCell = {
     props: {
-        style: React.CSSProperties,
-    },
-    children: React.ReactNode
-}
+        style: React.CSSProperties;
+    };
+    children: React.ReactNode;
+};
 
 /**
  * Get a coloured Table Cell for the label with AnswerRelative
@@ -204,18 +222,29 @@ function colouredCell(label: string | React.ReactElement, ansRelative: AnswerRel
     return {
         props: {
             style: {
-                backgroundColor: bgColor
-            }
+                backgroundColor: bgColor,
+            },
         },
-        children: <Space style={{ padding: '16px' }}>{icon}<>{label}</></Space>
+        children: (
+            <Space style={{ padding: '16px' }}>
+                {icon}
+                <>{label}</>
+            </Space>
+        ),
     };
 }
 
-export default function GuessTable({ vidData, guessedVideos, answer }: { vidData: Record<string, VideoData>, guessedVideos: string[], answer: AnswerData | null }): React.ReactElement {
+type Props = {
+    vidData: Record<string, VideoData>;
+    guessedVideos: string[];
+    answer: AnswerData | null;
+};
+
+export default function GuessTable({ vidData, guessedVideos, answer }: Props): React.ReactElement {
     const data = guessedVideos.map((x, index) => {
         return {
             key: guessedVideos.length - 1 - index + '-' + vidData[x].videoId,
-            ...vidData[x]
+            ...vidData[x],
         };
     });
     const answerData = answer != null ? vidData[answer.videoId] : null;
@@ -226,44 +255,48 @@ export default function GuessTable({ vidData, guessedVideos, answer }: { vidData
             key: 'title',
             width: '30%',
             className: 'guess-table-col-title',
-            render: (title) => colouredCell(title, AnswerRelative.None)
+            render: (title) => colouredCell(title, AnswerRelative.None),
         },
         {
             title: 'Uploader',
             dataIndex: 'uploaderName',
             key: 'uploaderName',
             width: '15%',
-            render: (uploaderName) => colouredCell(uploaderName, stringsToAnswerRelative(answerData?.uploaderName, uploaderName))
+            render: (uploaderName) =>
+                colouredCell(uploaderName, stringsToAnswerRelative(answerData?.uploaderName, uploaderName)),
         },
         {
             title: 'Length',
             dataIndex: 'length',
             key: 'length',
-            render: (length) => colouredCell(timeFormatter(length), numbersToAnswerRelative(answerData?.length, length))
+            render: (length) =>
+                colouredCell(timeFormatter(length), numbersToAnswerRelative(answerData?.length, length)),
         },
         {
             title: 'Views',
             dataIndex: 'views',
             key: 'views',
-            render: (views) => colouredCell(countFormatter(views), numbersToAnswerRelative(answerData?.views, views))
+            render: (views) => colouredCell(countFormatter(views), numbersToAnswerRelative(answerData?.views, views)),
         },
         {
             title: 'Likes',
             dataIndex: 'likes',
             key: 'likes',
-            render: (likes) => colouredCell(countFormatter(likes), numbersToAnswerRelative(answerData?.likes, likes))
+            render: (likes) => colouredCell(countFormatter(likes), numbersToAnswerRelative(answerData?.likes, likes)),
         },
         {
             title: 'Comments',
             dataIndex: 'commentCount',
             key: 'commentCount',
-            render: (comments) => colouredCell(countFormatter(comments), numbersToAnswerRelative(answerData?.commentCount, comments))
+            render: (comments) =>
+                colouredCell(countFormatter(comments), numbersToAnswerRelative(answerData?.commentCount, comments)),
         },
         {
             title: 'Uploaded',
             dataIndex: 'uploadDate',
             key: 'uploadDate',
-            render: (uploadDate) => colouredCell(dateFormatter(uploadDate), dateToAnswerRelative(answerData?.uploadDate, uploadDate))
+            render: (uploadDate) =>
+                colouredCell(dateFormatter(uploadDate), dateToAnswerRelative(answerData?.uploadDate, uploadDate)),
         },
         // {
         //     title: 'Original Creator',
@@ -274,11 +307,24 @@ export default function GuessTable({ vidData, guessedVideos, answer }: { vidData
             title: 'Categories',
             dataIndex: 'categories',
             key: 'categories',
-            render: (categories) => colouredCell(tagsFormatter(categories, TagDescDictionary), tagsToAnswerRelative(answerData?.categories, categories))
-        }
+            render: (categories) =>
+                colouredCell(
+                    tagsFormatter(categories, TagDescDictionary),
+                    tagsToAnswerRelative(answerData?.categories, categories)
+                ),
+        },
     ];
-    return <ConfigProvider renderEmpty={() => <Empty image={<SearchOutlined />} description="Enter a guess in the search to start!" />}>
-        <Table className='guess-table' rowKey={'key'} dataSource={data} columns={columns} pagination={false}>
-        </Table>
-    </ConfigProvider>;
+    return (
+        <ConfigProvider
+            renderEmpty={() => <Empty image={<SearchOutlined />} description="Enter a guess in the search to start!" />}
+        >
+            <Table
+                className="guess-table"
+                rowKey={'key'}
+                dataSource={data}
+                columns={columns}
+                pagination={false}
+            ></Table>
+        </ConfigProvider>
+    );
 }
