@@ -68,7 +68,11 @@ function App({ gamemode }: { gamemode?: Gamemode }): React.ReactElement {
                 fetch('./answer-data.json')
                     .then((response) => response.json())
                     .then((json) => {
-                        setAnswer(json[0]);
+                        const ans = json['answers'][0];
+                        if (ans != null) {
+                            setAnswer(ans);
+                            setPlayState(PlayState.InProgress);
+                        }
                     });
             }
             if (gamemode === Gamemode.Random) {
@@ -86,7 +90,7 @@ function App({ gamemode }: { gamemode?: Gamemode }): React.ReactElement {
             {contextHolder}
             <Layout className="main-layout">
                 <MainHeader></MainHeader>
-                <Content style={{ paddingTop: '16px', paddingLeft: '5%', paddingRight: '5%' }}>
+                <Content>
                     <Space direction="vertical" style={{ display: 'flex' }}>
                         <Row align="middle" justify="start" gutter={8}>
                             <Col span="12">
