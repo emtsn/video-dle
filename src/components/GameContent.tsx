@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { App, Col, Layout, Row, Space } from 'antd';
+import { App, Button, Col, Layout, Row, Space } from 'antd';
 import { HeartFilled } from '@ant-design/icons';
 import GuessTable from './GuessTable';
 import GuessInput from './GuessInput';
 import { VideoData } from '../models/video-data';
 import { AnswerData } from '../models/answer-data';
 import { Gamemode } from '../models/gamemode';
+import CommentsPanel from './CommentsPanel';
 const { Content } = Layout;
 
 const MAX_GUESSES = 6;
@@ -23,6 +24,8 @@ export default function GameContent({ gamemode }: { gamemode?: Gamemode }): Reac
     const [guessedVideos, setGuessedVideos] = useState<string[]>([]);
     const [vidData, setVideoData] = useState<Record<string, VideoData>>({});
     const [playState, setPlayState] = useState<PlayState>(PlayState.Initializing);
+    const [showHint, setShowHint] = useState<boolean>(false);
+    const hintCommentsCount = Math.floor((guessedVideos.length + 1) / 2);
 
     const handleSelect = useCallback(
         (videoId: string): void => {
@@ -72,8 +75,7 @@ export default function GameContent({ gamemode }: { gamemode?: Gamemode }): Reac
                             setPlayState(PlayState.InProgress);
                         }
                     });
-            }
-            if (gamemode === Gamemode.Random) {
+            } else if (gamemode === Gamemode.Random) {
                 const ans = videos[Math.floor(Math.random() * videos.length)].videoId;
                 setAnswer({
                     videoId: ans,
@@ -101,7 +103,17 @@ export default function GameContent({ gamemode }: { gamemode?: Gamemode }): Reac
                             )}
                         </Space>
                     </Col>
+                    {answer && answer.topComments && hintCommentsCount > 0 && (
+                        <Col span="4" style={{ display: 'flex', justifyContent: 'end' }}>
+                            <Button type="primary" onClick={() => setShowHint(!showHint)}>
+                                Hint
+                            </Button>
+                        </Col>
+                    )}
                 </Row>
+                {showHint && answer && answer.topComments && (
+                    <CommentsPanel comments={answer.topComments} showCount={hintCommentsCount} />
+                )}
                 <GuessTable vidData={vidData} guessedVideos={guessedVideos} answer={answer}></GuessTable>
             </Space>
         </Content>
