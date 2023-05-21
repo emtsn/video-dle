@@ -44,8 +44,8 @@ export default function CommentsPanel({ comments, showCount }: Props): React.Rea
         );
     });
     return (
-        <div style={{ background: '#f5f5f5', border: '1px solid #d9d9d9', borderRadius: '8px', overflow: 'scroll' }}>
-            <Row style={{ padding: '8px', minWidth: '600px' }}>{commentCols}</Row>
+        <div className="comments-panel">
+            <Row gutter={8}>{commentCols}</Row>
         </div>
     );
 }
