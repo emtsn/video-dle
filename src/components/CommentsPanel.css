@@ -18,3 +18,10 @@
     padding-right: 8px;
     min-width: 600px;
 }
+
+.comments-panel-title {
+    font-weight: 600;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 8px;
+}

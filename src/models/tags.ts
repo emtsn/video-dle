@@ -62,6 +62,6 @@ export const TagDescDictionary: VideoCategoriesDictionary = {
     Science: '',
     Shorts: 'Originally created for short video platforms like Vine, TikTok, etc...',
     Sports: 'Features a sport being played or an athlete',
-    Technology: 'Features and focuses on tech device, software, company, or person',
+    Technology: 'Features and focuses on a tech device, software, company, or person',
     Vlog: 'A diary-style video with a single person talking directly to the camera',
 } as const;

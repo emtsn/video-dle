@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { App, Button, Col, Layout, Row, Space } from 'antd';
-import { HeartFilled } from '@ant-design/icons';
+import { CheckCircleFilled, CloseCircleFilled, HeartFilled } from '@ant-design/icons';
 import GuessTable from './GuessTable';
 import GuessInput from './GuessInput';
 import { VideoData } from '../models/video-data';
 import { AnswerData } from '../models/answer-data';
 import { Gamemode } from '../models/gamemode';
 import CommentsPanel from './CommentsPanel';
+import { ModalFunc } from 'antd/es/modal/confirm';
+import { green, red } from '@ant-design/colors';
 const { Content } = Layout;
 
 const MAX_GUESSES = 6;
@@ -17,9 +19,53 @@ enum PlayState {
     Completed,
 }
 
+/**
+ * Display modal for when the game completes
+ * @param modal ANT UI modal
+ * @param isSuccess Player successfully completed the game
+ * @param answerVidData VideoData of the real answer
+ * @param title Title of modal
+ * @param extraText Extra text in the body
+ */
+function createGameOverModal(
+    modal: { info: ModalFunc },
+    isSuccess: boolean,
+    answerVidData: VideoData,
+    title: string,
+    extraText?: string
+): void {
+    modal.info({
+        title: title,
+        icon: isSuccess ? (
+            <CheckCircleFilled style={{ color: green.primary }} />
+        ) : (
+            <CloseCircleFilled style={{ color: red.primary }} />
+        ),
+        content: (
+            <Space style={{ marginLeft: '-34px' }} direction="vertical">
+                <hr style={{ height: '1px', borderWidth: 0, backgroundColor: '#5c5c5c' }} />
+                {extraText && <div>{extraText}</div>}
+                <div>
+                    <b>{answerVidData.title}</b>
+                    {' by ' + answerVidData.uploaderName}
+                </div>
+                <a href={`https://www.youtube.com/watch?v=${answerVidData.videoId}`} target="_blank" rel="noreferrer">
+                    <img
+                        alt="Thumbnail of the video"
+                        style={{ maxWidth: '100%' }}
+                        src={`https://i.ytimg.com/vi/${answerVidData.videoId}/hqdefault.jpg`}
+                    />
+                </a>
+            </Space>
+        ),
+        width: 500,
+        centered: true,
+    });
+}
+
 export default function GameContent({ gamemode }: { gamemode?: Gamemode }): React.ReactElement {
     if (gamemode === undefined) gamemode = Gamemode.Playlist;
-    const { message } = App.useApp();
+    const { modal } = App.useApp();
     const [answer, setAnswer] = useState<AnswerData | null>(null);
     const [guessedVideos, setGuessedVideos] = useState<string[]>([]);
     const [vidData, setVideoData] = useState<Record<string, VideoData>>({});
@@ -30,28 +76,28 @@ export default function GameContent({ gamemode }: { gamemode?: Gamemode }): Reac
     const handleSelect = useCallback(
         (videoId: string): void => {
             if (answer == null) return;
+            const guessCount = guessedVideos.length + 1;
             if (videoId === answer.videoId) {
                 setPlayState(PlayState.Completed);
-                message.open({
-                    type: 'success',
-                    content: 'Congrats! You found the right video!',
-                    duration: 3,
-                });
-            } else if (MAX_GUESSES <= guessedVideos.length + 1) {
+                createGameOverModal(
+                    modal,
+                    true,
+                    vidData[answer.videoId],
+                    `Congrats! You found the right video in ${guessCount} ${guessCount === 1 ? 'try' : 'tries'}!`
+                );
+            } else if (MAX_GUESSES <= guessCount) {
                 setPlayState(PlayState.Completed);
-                message.open({
-                    type: 'error',
-                    content:
-                        'You ran out of guesses. The correct answer was ' +
-                        vidData[answer.videoId].title +
-                        ' by ' +
-                        vidData[answer.videoId].uploaderName,
-                    duration: 3,
-                });
+                createGameOverModal(
+                    modal,
+                    false,
+                    vidData[answer.videoId],
+                    'You ran out of guesses...',
+                    'The correct answer was:'
+                );
             }
             setGuessedVideos((prev) => [videoId, ...prev]);
         },
-        [message, vidData, answer, guessedVideos]
+        [modal, vidData, answer, guessedVideos]
     );
 
     useEffect(() => {

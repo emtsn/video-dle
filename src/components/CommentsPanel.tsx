@@ -3,6 +3,7 @@ import { Avatar, Card, Col, Row, Skeleton, Space } from 'antd';
 import React from 'react';
 import { CommentData } from '../models/video-data';
 import './CommentsPanel.css';
+import { countFormatter } from '../utils/format-util';
 
 type Props = {
     comments: [CommentData, CommentData, CommentData];
@@ -34,7 +35,7 @@ export default function CommentsPanel({ comments, showCount }: Props): React.Rea
                                 {textFormatMultiline(x.message)}
                                 <Space direction="horizontal">
                                     <LikeOutlined />
-                                    {x.likes}
+                                    {countFormatter(x.likes)}
                                 </Space>
                             </Space>
                         }
@@ -45,6 +46,7 @@ export default function CommentsPanel({ comments, showCount }: Props): React.Rea
     });
     return (
         <div className="comments-panel">
+            <div className="comments-panel-title">Top Comments</div>
             <Row gutter={8}>{commentCols}</Row>
         </div>
     );
