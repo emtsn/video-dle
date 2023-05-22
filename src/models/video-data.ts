@@ -10,8 +10,9 @@ export interface CommentData {
  * Metadata information about the YT Video
  */
 export interface VideoData {
-    url: string;
+    url?: string;
     videoId: string;
+    thumbnailUrl?: string;
     title: string;
     length: number;
     views: number;

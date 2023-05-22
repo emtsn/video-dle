@@ -34,13 +34,19 @@ function createGameOverModal(
     title: string,
     extraText?: string
 ): void {
+    const videoUrl = answerVidData.url ? answerVidData.url : `https://www.youtube.com/watch?v=${answerVidData.videoId}`;
+    const thumbnailUrl = answerVidData.thumbnailUrl
+        ? answerVidData.thumbnailUrl
+        : `https://i.ytimg.com/vi/${answerVidData.videoId}/hqdefault.jpg`;
+    const icon = isSuccess ? (
+        <CheckCircleFilled style={{ color: green.primary }} />
+    ) : (
+        <CloseCircleFilled style={{ color: red.primary }} />
+    );
     modal.info({
+        className: 'gameover-modal',
         title: title,
-        icon: isSuccess ? (
-            <CheckCircleFilled style={{ color: green.primary }} />
-        ) : (
-            <CloseCircleFilled style={{ color: red.primary }} />
-        ),
+        icon: icon,
         content: (
             <Space style={{ marginLeft: '-34px' }} direction="vertical">
                 <hr style={{ height: '1px', borderWidth: 0, backgroundColor: '#5c5c5c' }} />
@@ -49,12 +55,8 @@ function createGameOverModal(
                     <b>{answerVidData.title}</b>
                     {' by ' + answerVidData.uploaderName}
                 </div>
-                <a href={`https://www.youtube.com/watch?v=${answerVidData.videoId}`} target="_blank" rel="noreferrer">
-                    <img
-                        alt="Thumbnail of the video"
-                        style={{ maxWidth: '100%' }}
-                        src={`https://i.ytimg.com/vi/${answerVidData.videoId}/hqdefault.jpg`}
-                    />
+                <a href={videoUrl} target="_blank" rel="noreferrer">
+                    <img alt="Thumbnail of the video" style={{ maxWidth: '100%' }} src={thumbnailUrl} />
                 </a>
             </Space>
         ),
