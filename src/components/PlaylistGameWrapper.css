@@ -1,17 +1,13 @@
 .content-holder {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     width: 100%;
-    height: 100%
 }
 
-.content-holder .content-separator {
-    min-height: 16px;
-    flex-grow: 1;
-}
-
-.main-layout .ant-layout-footer {
-    z-index: 2;
+.ant-pagination {
+    align-self: end;
+    padding-top: 16px;
 }
 
 .ant-pagination .ant-pagination-prev {

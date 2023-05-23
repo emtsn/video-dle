@@ -20,7 +20,7 @@ type Props = {
     vidData: Record<string, VideoData>;
     answer: AnswerData | null;
     gameKey: string;
-    onGameOver: (isSuccess: boolean, guessCount: number) => void;
+    onGameOver: (isSuccess: boolean, guessCount: number, reset: () => void) => void;
     completed: boolean;
 };
 
@@ -42,19 +42,24 @@ export default function GameContent({ vidData, answer, gameKey, onGameOver, comp
         [setGuessedVideos]
     );
 
+    const reset = useCallback(() => {
+        setGuessedVideos([]);
+        setPlayState(PlayState.InProgress);
+    }, [setPlayState, setGuessedVideos]);
+
     useEffect(() => {
         const guessCount = guessedVideos.length;
         if (answer && guessCount > 0 && playState === PlayState.InProgress) {
             const lastGuess = guessedVideos[guessCount - 1];
             if (lastGuess === answer.videoId) {
                 setPlayState(PlayState.Completed);
-                onGameOver(true, guessCount);
+                onGameOver(true, guessCount, reset);
             } else if (MAX_GUESSES <= guessCount) {
                 setPlayState(PlayState.Completed);
-                onGameOver(false, guessCount);
+                onGameOver(false, guessCount, reset);
             }
         }
-    }, [answer, playState, guessedVideos, onGameOver]);
+    }, [answer, playState, guessedVideos, onGameOver, reset]);
 
     useEffect(() => {
         if (answer != null) {

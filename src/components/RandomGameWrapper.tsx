@@ -4,18 +4,20 @@ import GameContent from '../components/GameContent';
 import { VideoData } from '../models/video-data';
 import { AnswerData } from '../models/answer-data';
 import { createGameOverModal } from './gameOverModal';
-import { useLocalStorageState, useLocalStorageStateNumber } from '../hooks/useLocalStorageState';
+import { useLocalStorageState } from '../hooks/useLocalStorageState';
 const { Content } = Layout;
 
 type Props = {
     videoData: Record<string, VideoData>;
 };
 
+const LS_KEY_ANSWER = 'random-quiz-answer';
+const LS_KEY_GUESSED = 'random-quiz-guessed';
+
 export default function RandomGameWrapper({ videoData }: Props): React.ReactElement {
     const { modal } = AntApp.useApp();
-    const [genkey, setGenKey] = useLocalStorageStateNumber('random-quiz-key', Date.now());
     const [answerId, setAnswerId] = useLocalStorageState<string | undefined>(
-        'random-quiz-answer',
+        LS_KEY_ANSWER,
         undefined,
         (val) => val === undefined || typeof val === 'string'
     );
@@ -30,25 +32,25 @@ export default function RandomGameWrapper({ videoData }: Props): React.ReactElem
         return answerId ? { videoId: answerId } : null;
     }, [answerId]);
     const handleGameOver = useCallback(
-        (isSuccess: boolean, guessCount: number) => {
+        (isSuccess: boolean, guessCount: number, reset: () => void) => {
             if (answer != null) {
                 let onNext = (): void => {
-                    setGenKey(Date.now());
                     const videos = Object.values(videoData);
                     setAnswerId(videos[Math.floor(Math.random() * videos.length)].videoId);
+                    reset();
                 };
                 createGameOverModal(modal, isSuccess, videoData[answer.videoId], guessCount, onNext);
             }
         },
-        [modal, videoData, answer, setGenKey, setAnswerId]
+        [modal, videoData, answer, setAnswerId]
     );
     return (
         <Content className="main-layout-content">
             <GameContent
-                key={genkey + '-' + answer?.videoId}
+                key={'random-quiz-content'}
                 vidData={videoData}
                 answer={answer}
-                gameKey={'random-quiz-guessed-' + genkey}
+                gameKey={LS_KEY_GUESSED}
                 onGameOver={handleGameOver}
                 completed={false}
             />

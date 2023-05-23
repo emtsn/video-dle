@@ -64,9 +64,7 @@ export default function PlaylistGameWrapper({ videoData, answerData }: Props): R
                     onGameOver={handleGameOver}
                     completed={quizNum < completedQuizzes.length && completedQuizzes[quizNum]}
                 />
-                <div className="content-separator" />
                 <Pagination
-                    style={{ alignSelf: 'end' }}
                     defaultCurrent={quizNum + 1}
                     current={quizNum + 1}
                     pageSize={1}

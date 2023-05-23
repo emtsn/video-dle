@@ -1,8 +1,17 @@
 import { useEffect } from 'react';
 import { Dispatch, SetStateAction, useState } from 'react';
 
+/**
+ * Insert input into localStorage iff it is not undefined
+ * @param key
+ * @param input
+ */
 function insertIfDefined(key: string, input: string | undefined): void {
-    if (input !== undefined) localStorage.setItem(key, input);
+    if (input !== undefined) {
+        localStorage.setItem(key, input);
+    } else {
+        localStorage.removeItem(key);
+    }
 }
 
 export function useLocalStorageState<T>(
@@ -28,9 +37,11 @@ export function useLocalStorageState<T>(
         insertIfDefined(key, inputConverter(init));
         return init;
     });
+
     useEffect(() => {
         insertIfDefined(key, inputConverter(state));
     }, [key, state, inputConverter]);
+
     return [state, setState];
 }
 
