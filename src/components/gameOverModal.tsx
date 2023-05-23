@@ -1,0 +1,65 @@
+import React from 'react';
+import { Image, Space } from 'antd';
+import { ModalFunc } from 'antd/es/modal/confirm';
+import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
+import { green, red } from '@ant-design/colors';
+import { VideoData } from '../models/video-data';
+/**
+ * Display modal for when the game completes
+ * @param modal ANT UI modal
+ * @param isSuccess Player successfully completed the game
+ * @param answerVidData VideoData of the real answer
+ * @param title Title of modal
+ * @param extraText Extra text in the body
+ * @param onNext Callback on when 'Next' button is pressed
+ */
+export function createGameOverModal(
+    modal: { info: ModalFunc },
+    isSuccess: boolean,
+    answerVidData: VideoData,
+    guessCount: number,
+    onNext?: () => void
+): void {
+    const title = isSuccess
+        ? `Congrats! You found the right video in ${guessCount} ${guessCount === 1 ? 'try' : 'tries'}!`
+        : 'You ran out of guesses...';
+    const extraText = isSuccess ? undefined : 'The correct answer was:';
+    const videoUrl = answerVidData.url ? answerVidData.url : `https://www.youtube.com/watch?v=${answerVidData.videoId}`;
+    const thumbnailUrl = answerVidData.thumbnailUrl
+        ? answerVidData.thumbnailUrl
+        : `https://i.ytimg.com/vi/${answerVidData.videoId}/hqdefault.jpg`;
+    const icon = isSuccess ? (
+        <CheckCircleFilled style={{ color: green.primary }} />
+    ) : (
+        <CloseCircleFilled style={{ color: red.primary }} />
+    );
+    modal.info({
+        className: 'gameover-modal',
+        title: title,
+        icon: icon,
+        content: (
+            <Space style={{ marginLeft: '-34px' }} direction="vertical">
+                <hr style={{ height: '1px', borderWidth: 0, backgroundColor: '#5c5c5c' }} />
+                {extraText && <div>{extraText}</div>}
+                <div>
+                    <b>{answerVidData.title}</b>
+                    {' by ' + answerVidData.uploaderName}
+                </div>
+                <a href={videoUrl} target="_blank" rel="noreferrer">
+                    <Image
+                        // alt="Thumbnail of the video"
+                        style={{ minHeight: '200px', maxWidth: '100%' }}
+                        src={thumbnailUrl}
+                        preview={false}
+                        placeholder={true}
+                    />
+                </a>
+            </Space>
+        ),
+        maskClosable: true,
+        okText: onNext ? 'Next' : 'Close',
+        onOk: onNext,
+        width: 500,
+        centered: true,
+    });
+}
