@@ -60,6 +60,7 @@ export default function PlaylistGameWrapper({ videoData, answerData }: Props): R
                     key={quizNum + '-' + answer?.videoId}
                     vidData={videoData}
                     answer={answer}
+                    gameKey={'playlist-quiz-guessed-' + quizNum}
                     onGameOver={handleGameOver}
                     completed={quizNum < completedQuizzes.length && completedQuizzes[quizNum]}
                 />

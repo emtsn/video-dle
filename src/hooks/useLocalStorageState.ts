@@ -1,26 +1,35 @@
 import { useEffect } from 'react';
 import { Dispatch, SetStateAction, useState } from 'react';
 
+function insertIfDefined(key: string, input: string | undefined): void {
+    if (input !== undefined) localStorage.setItem(key, input);
+}
+
 export function useLocalStorageState<T>(
     key: string,
     init: T,
     validator?: (val: any) => boolean,
-    inputConverter: (inputVal: T) => string = JSON.stringify,
+    inputConverter: (inputVal: T) => string | undefined = JSON.stringify,
     outputConverter: (storedVal: string) => T = JSON.parse
 ): [T, Dispatch<SetStateAction<T>>] {
     const [state, setState] = useState<T>(() => {
         const lsItem: string | null = localStorage.getItem(key);
         if (lsItem != null) {
-            const storedVal = outputConverter(lsItem);
-            if (validator == null || validator(storedVal)) {
+            let storedVal = undefined;
+            try {
+                storedVal = outputConverter(lsItem);
+            } catch (error) {
+                console.error(error);
+            }
+            if (storedVal !== undefined && (validator == null || validator(storedVal))) {
                 init = storedVal as T;
             }
         }
-        localStorage.setItem(key, inputConverter(init));
+        insertIfDefined(key, inputConverter(init));
         return init;
     });
     useEffect(() => {
-        localStorage.setItem(key, inputConverter(state));
+        insertIfDefined(key, inputConverter(state));
     }, [key, state, inputConverter]);
     return [state, setState];
 }
@@ -48,7 +57,7 @@ export function useLocalStorageStateArray<T>(
         key,
         init,
         (val: any) => Array.isArray(val) && val.every((x) => elementValidator(x)),
-        (inputVal: T[]) => JSON.stringify(inputVal),
+        (inputVal: T[]) => (inputVal.length < 1 ? undefined : JSON.stringify(inputVal)),
         (outputVal: string) => JSON.parse(outputVal)
     );
 }

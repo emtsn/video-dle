@@ -6,6 +6,7 @@ import GuessInput from './GuessInput';
 import { VideoData } from '../models/video-data';
 import { AnswerData } from '../models/answer-data';
 import CommentsPanel from './CommentsPanel';
+import { useLocalStorageStateArray } from '../hooks/useLocalStorageState';
 
 const MAX_GUESSES = 6;
 
@@ -18,32 +19,42 @@ enum PlayState {
 type Props = {
     vidData: Record<string, VideoData>;
     answer: AnswerData | null;
+    gameKey: string;
     onGameOver: (isSuccess: boolean, guessCount: number) => void;
     completed: boolean;
 };
 
-export default function GameContent({ vidData, answer, onGameOver, completed }: Props): React.ReactElement {
-    const [guessedVideos, setGuessedVideos] = useState<string[]>([]);
+export default function GameContent({ vidData, answer, gameKey, onGameOver, completed }: Props): React.ReactElement {
     const [playState, setPlayState] = useState<PlayState>(PlayState.Initializing);
     const [showHint, setShowHint] = useState<boolean>(false);
+    const [guessedVideos, setGuessedVideos] = useLocalStorageStateArray<string>(
+        gameKey,
+        [],
+        (val) => typeof val === 'string'
+    );
     const hintCommentsCount =
         playState === PlayState.Completed ? Number.MAX_VALUE : Math.floor((guessedVideos.length + 1) / 2);
 
     const handleSelect = useCallback(
         (videoId: string): void => {
-            if (answer == null) return;
-            const guessCount = guessedVideos.length + 1;
-            if (videoId === answer.videoId) {
+            setGuessedVideos((prev) => [videoId, ...prev]);
+        },
+        [setGuessedVideos]
+    );
+
+    useEffect(() => {
+        const guessCount = guessedVideos.length;
+        if (answer && guessCount > 0 && playState === PlayState.InProgress) {
+            const lastGuess = guessedVideos[guessCount - 1];
+            if (lastGuess === answer.videoId) {
                 setPlayState(PlayState.Completed);
                 onGameOver(true, guessCount);
             } else if (MAX_GUESSES <= guessCount) {
                 setPlayState(PlayState.Completed);
                 onGameOver(false, guessCount);
             }
-            setGuessedVideos((prev) => [videoId, ...prev]);
-        },
-        [answer, guessedVideos, onGameOver]
-    );
+        }
+    }, [answer, playState, guessedVideos, onGameOver]);
 
     useEffect(() => {
         if (answer != null) {

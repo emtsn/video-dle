@@ -213,19 +213,26 @@ type Props = {
     showAnswer: boolean;
 };
 
+type VideoTableRow = VideoData & {
+    key: string;
+};
+
 export default function GuessTable({ vidData, guessedVideos, answer, showAnswer }: Props): React.ReactElement {
     const answerData = answer != null ? vidData[answer.videoId] : null;
-    const data = useMemo(() => {
-        const vids = guessedVideos.map((x, index) => {
-            return {
-                key: guessedVideos.length - 1 - index + '-' + vidData[x].videoId,
-                ...vidData[x],
-            };
+    const data: VideoTableRow[] = useMemo(() => {
+        const vids: (VideoTableRow | null)[] = guessedVideos.map((x, index) => {
+            if (vidData[x]) {
+                return {
+                    key: guessedVideos.length - 1 - index + '-' + vidData[x].videoId,
+                    ...vidData[x],
+                };
+            }
+            return null;
         });
         if (showAnswer && answerData != null && !guessedVideos.includes(answerData.videoId)) {
-            vids.push({ key: 'answer-' + answerData.videoId, ...answerData });
+            vids.unshift({ key: 'answer-' + answerData.videoId, ...answerData });
         }
-        return vids;
+        return vids.filter((x) => x != null) as VideoTableRow[];
     }, [vidData, guessedVideos, answerData, showAnswer]);
     const columns: TableColumnsType<VideoData> = [
         {

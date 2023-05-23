@@ -4,6 +4,7 @@ import { ModalFunc } from 'antd/es/modal/confirm';
 import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 import { green, red } from '@ant-design/colors';
 import { VideoData } from '../models/video-data';
+
 /**
  * Display modal for when the game completes
  * @param modal ANT UI modal
