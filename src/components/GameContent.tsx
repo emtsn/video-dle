@@ -19,9 +19,10 @@ type Props = {
     vidData: Record<string, VideoData>;
     answer: AnswerData | null;
     onGameOver: (isSuccess: boolean, guessCount: number) => void;
+    completed: boolean;
 };
 
-export default function GameContent({ vidData, answer, onGameOver }: Props): React.ReactElement {
+export default function GameContent({ vidData, answer, onGameOver, completed }: Props): React.ReactElement {
     const [guessedVideos, setGuessedVideos] = useState<string[]>([]);
     const [playState, setPlayState] = useState<PlayState>(PlayState.Initializing);
     const [showHint, setShowHint] = useState<boolean>(false);
@@ -40,16 +41,23 @@ export default function GameContent({ vidData, answer, onGameOver }: Props): Rea
                 onGameOver(false, guessCount);
             }
             setGuessedVideos((prev) => [videoId, ...prev]);
-            localStorage.setItem('playlist-guessed-1', JSON.stringify([videoId, ...guessedVideos]));
         },
         [answer, guessedVideos, onGameOver]
     );
 
     useEffect(() => {
         if (answer != null) {
-            setPlayState((previous) => (previous === PlayState.Initializing ? PlayState.InProgress : previous));
+            setPlayState((previous) => {
+                if (completed) return PlayState.Completed;
+                switch (previous) {
+                    case PlayState.Initializing:
+                        return PlayState.InProgress;
+                    default:
+                        return previous;
+                }
+            });
         }
-    }, [answer]);
+    }, [answer, completed]);
 
     return (
         <Space direction="vertical" style={{ display: 'flex' }}>
@@ -71,7 +79,7 @@ export default function GameContent({ vidData, answer, onGameOver }: Props): Rea
                 {answer && answer.topComments && hintCommentsCount > 0 && (
                     <Col span="4" style={{ display: 'flex', justifyContent: 'end' }}>
                         <Button type="primary" onClick={() => setShowHint(!showHint)}>
-                            Hint
+                            Hints
                         </Button>
                     </Col>
                 )}
@@ -79,7 +87,12 @@ export default function GameContent({ vidData, answer, onGameOver }: Props): Rea
             {showHint && answer && answer.topComments && (
                 <CommentsPanel comments={answer.topComments} showCount={hintCommentsCount} />
             )}
-            <GuessTable vidData={vidData} guessedVideos={guessedVideos} answer={answer}></GuessTable>
+            <GuessTable
+                vidData={vidData}
+                guessedVideos={guessedVideos}
+                answer={answer}
+                showAnswer={playState === PlayState.Completed}
+            ></GuessTable>
         </Space>
     );
 }

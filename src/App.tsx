@@ -7,7 +7,7 @@ import GameContent from './components/GameContent';
 import { VideoData } from './models/video-data';
 import { AnswerData } from './models/answer-data';
 import { Gamemode } from './models/gamemode';
-import { useLocalStorageStateNumber } from './hooks/useLocalStorageState';
+import { useLocalStorageStateArray, useLocalStorageStateNumber } from './hooks/useLocalStorageState';
 import { green, red } from '@ant-design/colors';
 import { ModalFunc } from 'antd/es/modal/confirm';
 const { Content, Footer } = Layout;
@@ -75,6 +75,11 @@ function App(): React.ReactElement {
     const [videoData, setVideoData] = useState<Record<string, VideoData>>({});
     const [answerData, setAnswerData] = useState<AnswerData[] | null>(null);
     const [quizNum, setQuizNum] = useLocalStorageStateNumber('playlist-quiz-num', 0, (val) => val >= 0);
+    const [completedQuizzes, setCompletedQuizzes] = useLocalStorageStateArray<boolean>(
+        'playlist-quiz-completed',
+        [],
+        (val) => typeof val == 'boolean'
+    );
     const isLastQuiz: boolean = quizNum >= (answerData ? answerData?.length - 1 : 0);
     useEffect(() => {
         fetch('./video-data.json')
@@ -111,7 +116,7 @@ function App(): React.ReactElement {
     }, [gamemode, videoData, answerData, quizNum, setQuizNum]);
     const handleGameOver = useCallback(
         (isSuccess: boolean, guessCount: number) => {
-            if (answer != null) {
+            if (answerData != null && answer != null) {
                 const title = isSuccess
                     ? `Congrats! You found the right video in ${guessCount} ${guessCount === 1 ? 'try' : 'tries'}!`
                     : 'You ran out of guesses...';
@@ -125,12 +130,19 @@ function App(): React.ReactElement {
                     isLastQuiz
                         ? undefined
                         : () => {
-                              setQuizNum((val) => Math.min(answerData ? answerData.length - 1 : 0, val + 1));
+                              setQuizNum((val) => Math.min(answerData.length - 1, val + 1));
                           }
                 );
+                setCompletedQuizzes((prevCompleted) => {
+                    const completed = new Array<boolean>(answerData.length);
+                    for (let index = 0; index < completed.length; index++) {
+                        completed[index] = index === quizNum || (index < prevCompleted.length && prevCompleted[index]);
+                    }
+                    return completed;
+                });
             }
         },
-        [modal, videoData, answerData, answer, setQuizNum, isLastQuiz]
+        [modal, videoData, answerData, answer, quizNum, setQuizNum, setCompletedQuizzes, isLastQuiz]
     );
     return (
         <Layout className="main-layout">
@@ -143,6 +155,7 @@ function App(): React.ReactElement {
                         vidData={videoData}
                         answer={answer}
                         onGameOver={handleGameOver}
+                        completed={quizNum < completedQuizzes.length && completedQuizzes[quizNum]}
                     />
                     <div className="content-separator" />
                     {gamemode === Gamemode.Playlist && (
@@ -156,8 +169,19 @@ function App(): React.ReactElement {
                             onChange={(page) => setQuizNum(page - 1)}
                             itemRender={(page, type, element) => {
                                 if (type === 'page') {
-                                    // eslint-disable-next-line jsx-a11y/anchor-is-valid
-                                    return <a rel="no-follow">#{page}</a>;
+                                    return (
+                                        // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                                        <a
+                                            className={
+                                                page - 1 < completedQuizzes.length && completedQuizzes[page - 1]
+                                                    ? 'page-completed'
+                                                    : 'page-not-completed'
+                                            }
+                                            rel="no-follow"
+                                        >
+                                            #{page}
+                                        </a>
+                                    );
                                 }
                                 return element;
                             }}

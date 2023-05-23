@@ -34,6 +34,16 @@
     display: none;
 }
 
-.ant-pagination .ant-pagination-item:not(.ant-pagination-item-active) {
-    border: 1px solid #d9d9d9
+.ant-pagination .ant-pagination-item {
+    background-color: transparent;
+    overflow: hidden;
+}
+
+.ant-pagination .ant-pagination-item:not(.ant-pagination-item-active):not(.page-completed) {
+    border: 1px solid #d9d9d9;
+}
+
+.ant-pagination .ant-pagination-item .page-completed {
+    background-color: rgba(82, 196, 26, 0.4);
+    color: #3d3d3d
 }

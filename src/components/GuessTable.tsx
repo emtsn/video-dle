@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { TableColumnsType, ConfigProvider, Empty, Space, Table, Tag, Tooltip } from 'antd';
 import { VideoData } from '../models/video-data';
 import { AnswerData } from '../models/answer-data';
@@ -210,16 +210,23 @@ type Props = {
     vidData: Record<string, VideoData>;
     guessedVideos: string[];
     answer: AnswerData | null;
+    showAnswer: boolean;
 };
 
-export default function GuessTable({ vidData, guessedVideos, answer }: Props): React.ReactElement {
-    const data = guessedVideos.map((x, index) => {
-        return {
-            key: guessedVideos.length - 1 - index + '-' + vidData[x].videoId,
-            ...vidData[x],
-        };
-    });
+export default function GuessTable({ vidData, guessedVideos, answer, showAnswer }: Props): React.ReactElement {
     const answerData = answer != null ? vidData[answer.videoId] : null;
+    const data = useMemo(() => {
+        const vids = guessedVideos.map((x, index) => {
+            return {
+                key: guessedVideos.length - 1 - index + '-' + vidData[x].videoId,
+                ...vidData[x],
+            };
+        });
+        if (showAnswer && answerData != null && !guessedVideos.includes(answerData.videoId)) {
+            vids.push({ key: 'answer-' + answerData.videoId, ...answerData });
+        }
+        return vids;
+    }, [vidData, guessedVideos, answerData, showAnswer]);
     const columns: TableColumnsType<VideoData> = [
         {
             title: 'Title',
