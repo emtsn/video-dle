@@ -50,7 +50,7 @@ export default function GameContent({ vidData, answer, gameKey, onGameOver, comp
     useEffect(() => {
         const guessCount = guessedVideos.length;
         if (answer && guessCount > 0 && playState === PlayState.InProgress) {
-            const lastGuess = guessedVideos[guessCount - 1];
+            const lastGuess = guessedVideos[0];
             if (lastGuess === answer.videoId) {
                 setPlayState(PlayState.Completed);
                 onGameOver(true, guessCount, reset);

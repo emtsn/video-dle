@@ -1,7 +1,11 @@
 import React from 'react';
-import { Col, Layout, Menu, MenuProps, Row } from 'antd';
+import { Col, Layout, Menu, MenuProps, Row, Space } from 'antd';
 import './MainHeader.css';
 import { Gamemode } from '../models/gamemode';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCirclePlay } from '@fortawesome/free-regular-svg-icons';
+import { faPlay, faShuffle } from '@fortawesome/free-solid-svg-icons';
+import { red } from '@ant-design/colors';
 
 const { Header } = Layout;
 
@@ -17,10 +21,12 @@ export default function MainHeader({ gamemode, handleChangeGamemode }: Props): R
         {
             label: 'Play',
             key: 'play',
+            icon: <FontAwesomeIcon icon={faPlay} />,
         },
         {
             label: 'Random',
             key: 'random',
+            icon: <FontAwesomeIcon icon={faShuffle} />,
         },
     ];
     const selectedKeys: string[] = gamemode === Gamemode.Random ? ['random'] : ['play'];
@@ -32,7 +38,13 @@ export default function MainHeader({ gamemode, handleChangeGamemode }: Props): R
         <Header className="main-header">
             <Row>
                 <Col span={6}>
-                    <h1 style={{ margin: 0 }}>Video-dle</h1>
+                    <Space>
+                        <FontAwesomeIcon size={'lg'} icon={faCirclePlay} />
+                        <div style={{ display: 'flex' }}>
+                            <h1 style={{ margin: 0 }}>Video</h1>
+                            <h1 style={{ margin: 0, color: red.primary }}>dle</h1>
+                        </div>
+                    </Space>
                 </Col>
                 <Col span={18}>
                     <Menu mode="horizontal" items={items} selectedKeys={selectedKeys} onClick={handleClick}></Menu>
