@@ -98,35 +98,35 @@ export default function PlaylistGameWrapper({ videoData, answerData }: Props): R
     return (
         <Content className="main-layout-content">
             <div className="content-holder">
-                <div>
+                <div className="playlist-header">
                     <h2 style={{ marginTop: 0 }}>Video #{quizNum + 1}</h2>
-                    <GameContent
-                        key={quizNum + '-' + answer?.videoId}
-                        vidData={videoData}
-                        answer={answer}
-                        gameKey={'playlist-quiz-guessed-' + quizNum}
-                        onGameOver={handleGameOver}
-                        completed={quizNum < completedQuizzes.length && isCompleted(completedQuizzes[quizNum])}
+                    <Pagination
+                        defaultCurrent={quizNum + 1}
+                        current={quizNum + 1}
+                        pageSize={1}
+                        defaultPageSize={1}
+                        total={answerData ? answerData.length : 10}
+                        onChange={(page) => setQuizNum(page - 1)}
+                        itemRender={(page, type, element) => {
+                            if (type === 'page') {
+                                return (
+                                    // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                                    <a className={getCompletionClass(page - 1)} rel="no-follow">
+                                        #{page}
+                                    </a>
+                                );
+                            }
+                            return element;
+                        }}
                     />
                 </div>
-                <Pagination
-                    defaultCurrent={quizNum + 1}
-                    current={quizNum + 1}
-                    pageSize={1}
-                    defaultPageSize={1}
-                    total={answerData ? answerData.length : 10}
-                    onChange={(page) => setQuizNum(page - 1)}
-                    itemRender={(page, type, element) => {
-                        if (type === 'page') {
-                            return (
-                                // eslint-disable-next-line jsx-a11y/anchor-is-valid
-                                <a className={getCompletionClass(page - 1)} rel="no-follow">
-                                    #{page}
-                                </a>
-                            );
-                        }
-                        return element;
-                    }}
+                <GameContent
+                    key={quizNum + '-' + answer?.videoId}
+                    vidData={videoData}
+                    answer={answer}
+                    gameKey={'playlist-quiz-guessed-' + quizNum}
+                    onGameOver={handleGameOver}
+                    completed={quizNum < completedQuizzes.length && isCompleted(completedQuizzes[quizNum])}
                 />
             </div>
         </Content>

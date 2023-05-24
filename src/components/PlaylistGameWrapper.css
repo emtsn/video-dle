@@ -1,13 +1,19 @@
 .content-holder {
-    display: flex;
+    /* display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-between; */
     width: 100%;
 }
 
-.ant-pagination {
+/* .ant-pagination {
     align-self: end;
     padding-top: 16px;
+} */
+
+.playlist-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .ant-pagination .ant-pagination-prev {
