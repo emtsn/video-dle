@@ -46,14 +46,16 @@ export default function RandomGameWrapper({ videoData }: Props): React.ReactElem
     );
     return (
         <Content className="main-layout-content">
-            <GameContent
-                key={'random-quiz-content'}
-                vidData={videoData}
-                answer={answer}
-                gameKey={LS_KEY_GUESSED}
-                onGameOver={handleGameOver}
-                completed={false}
-            />
+            <div className="content-holder">
+                <GameContent
+                    key={'random-quiz-content'}
+                    vidData={videoData}
+                    answer={answer}
+                    gameKey={LS_KEY_GUESSED}
+                    onGameOver={handleGameOver}
+                    completed={false}
+                />
+            </div>
         </Content>
     );
 }

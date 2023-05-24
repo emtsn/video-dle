@@ -5,6 +5,11 @@
     background-color: transparent;
 }
 
+/* .main-layout .ant-layout-header {
+    padding-left: 5%;
+    padding-right: 5%;
+} */
+
 .main-layout .main-layout-content {
     display: flex;
     padding-top: 16px;

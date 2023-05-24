@@ -13,13 +13,30 @@ type Props = {
     answerData: AnswerData[] | null;
 };
 
+enum CompletionState {
+    InProgress,
+    Success,
+    Failed,
+}
+
+function isCompletion(val: any): val is CompletionState {
+    return (
+        typeof val === 'number' &&
+        [CompletionState.InProgress, CompletionState.Success, CompletionState.Failed].includes(val)
+    );
+}
+
+function isCompleted(val: CompletionState): boolean {
+    return val === CompletionState.Success || val === CompletionState.Failed;
+}
+
 export default function PlaylistGameWrapper({ videoData, answerData }: Props): React.ReactElement {
     const { modal } = AntApp.useApp();
     const [quizNum, setQuizNum] = useLocalStorageStateNumber('playlist-quiz-num', 0, (val) => val >= 0);
-    const [completedQuizzes, setCompletedQuizzes] = useLocalStorageStateArray<boolean>(
+    const [completedQuizzes, setCompletedQuizzes] = useLocalStorageStateArray<CompletionState>(
         'playlist-quiz-completed',
         [],
-        (val) => typeof val == 'boolean'
+        isCompletion
     );
     const answer = useMemo(() => {
         const videos = Object.values(videoData);
@@ -43,9 +60,18 @@ export default function PlaylistGameWrapper({ videoData, answerData }: Props): R
                 }
                 createGameOverModal(modal, isSuccess, videoData[answer.videoId], guessCount, onNext);
                 setCompletedQuizzes((prevCompleted) => {
-                    const completed = new Array<boolean>(answerData.length);
+                    const completed = new Array<CompletionState>(answerData.length);
                     for (let index = 0; index < completed.length; index++) {
-                        completed[index] = index === quizNum || (index < prevCompleted.length && prevCompleted[index]);
+                        if (index === quizNum) {
+                            completed[index] = isSuccess ? CompletionState.Success : CompletionState.Failed;
+                        } else if (
+                            index < prevCompleted.length &&
+                            prevCompleted[index] !== CompletionState.InProgress
+                        ) {
+                            completed[index] = prevCompleted[index];
+                        } else {
+                            completed[index] = CompletionState.InProgress;
+                        }
                     }
                     return completed;
                 });
@@ -53,17 +79,36 @@ export default function PlaylistGameWrapper({ videoData, answerData }: Props): R
         },
         [modal, videoData, answerData, answer, quizNum, setQuizNum, setCompletedQuizzes]
     );
+
+    const getCompletionClass = useCallback(
+        (quiz: number) => {
+            if (quiz >= completedQuizzes.length) return 'page-not-completed';
+            switch (completedQuizzes[quiz]) {
+                case CompletionState.Success:
+                    return 'page-completed-success';
+                case CompletionState.Failed:
+                    return 'page-completed-failed';
+                default:
+                    return 'page-not-completed';
+            }
+        },
+        [completedQuizzes]
+    );
+
     return (
         <Content className="main-layout-content">
             <div className="content-holder">
-                <GameContent
-                    key={quizNum + '-' + answer?.videoId}
-                    vidData={videoData}
-                    answer={answer}
-                    gameKey={'playlist-quiz-guessed-' + quizNum}
-                    onGameOver={handleGameOver}
-                    completed={quizNum < completedQuizzes.length && completedQuizzes[quizNum]}
-                />
+                <div>
+                    <h2 style={{ marginTop: 0 }}>Video #{quizNum + 1}</h2>
+                    <GameContent
+                        key={quizNum + '-' + answer?.videoId}
+                        vidData={videoData}
+                        answer={answer}
+                        gameKey={'playlist-quiz-guessed-' + quizNum}
+                        onGameOver={handleGameOver}
+                        completed={quizNum < completedQuizzes.length && isCompleted(completedQuizzes[quizNum])}
+                    />
+                </div>
                 <Pagination
                     defaultCurrent={quizNum + 1}
                     current={quizNum + 1}
@@ -75,14 +120,7 @@ export default function PlaylistGameWrapper({ videoData, answerData }: Props): R
                         if (type === 'page') {
                             return (
                                 // eslint-disable-next-line jsx-a11y/anchor-is-valid
-                                <a
-                                    className={
-                                        page - 1 < completedQuizzes.length && completedQuizzes[page - 1]
-                                            ? 'page-completed'
-                                            : 'page-not-completed'
-                                    }
-                                    rel="no-follow"
-                                >
+                                <a className={getCompletionClass(page - 1)} rel="no-follow">
                                     #{page}
                                 </a>
                             );
