@@ -45,6 +45,7 @@ export function createGameOverModal(
                 <div>
                     <b>{answerVidData.title}</b>
                     {' by ' + answerVidData.uploaderName}
+                    {!!answerVidData.originalCreator && ' (Original: ' + answerVidData.originalCreator + ')'}
                 </div>
                 <a href={videoUrl} target="_blank" rel="noreferrer">
                     <Image
