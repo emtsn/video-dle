@@ -2,6 +2,8 @@
 
 A game where you guess the popular/viral/notable YouTube video in limited tries where each try gives you a hint on the actual video.
 
+![Example](./example.png)
+
 ---
 
 Created with [React](https://react.dev/)
