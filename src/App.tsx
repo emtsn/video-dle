@@ -7,7 +7,7 @@ import RandomGameWrapper from './components/RandomGameWrapper';
 import { VideoData } from './models/video-data';
 import { AnswerData } from './models/answer-data';
 import { Gamemode } from './models/gamemode';
-import './App.css';
+import './App.scss';
 const { Footer } = Layout;
 
 function App(): React.ReactElement {

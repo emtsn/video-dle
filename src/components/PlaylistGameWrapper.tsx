@@ -5,7 +5,7 @@ import { VideoData } from '../models/video-data';
 import { AnswerData } from '../models/answer-data';
 import { useLocalStorageStateArray, useLocalStorageStateNumber } from '../hooks/useLocalStorageState';
 import { createGameOverModal } from './gameOverModal';
-import './PlaylistGameWrapper.css';
+import './PlaylistGameWrapper.scss';
 const { Content } = Layout;
 
 type Props = {

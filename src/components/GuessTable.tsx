@@ -4,7 +4,7 @@ import { VideoData } from '../models/video-data';
 import { AnswerData } from '../models/answer-data';
 import { ArrowDownOutlined, ArrowUpOutlined, SearchOutlined } from '@ant-design/icons';
 import { green, orange, red } from '@ant-design/colors';
-import './GuessTable.css';
+import './GuessTable.scss';
 import { Dictionary, TagDescDictionary } from '../models/tags';
 import { countFormatter, timeFormatter } from '../utils/format-util';
 
@@ -244,7 +244,7 @@ export default function GuessTable({ vidData, guessedVideos, answer, showAnswer 
             render: (title) => colouredCell(title, AnswerRelative.None),
         },
         {
-            title: 'Uploader',
+            title: 'Channel',
             dataIndex: 'uploaderName',
             key: 'uploaderName',
             width: '15%',

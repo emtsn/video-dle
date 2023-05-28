@@ -1,6 +1,6 @@
 import React from 'react';
 import { Col, Layout, Menu, MenuProps, Row, Space } from 'antd';
-import './MainHeader.css';
+import './MainHeader.scss';
 import { Gamemode } from '../models/gamemode';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlay } from '@fortawesome/free-regular-svg-icons';

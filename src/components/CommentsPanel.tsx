@@ -2,7 +2,7 @@ import { LikeOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Card, Col, Row, Skeleton, Space } from 'antd';
 import React from 'react';
 import { CommentData } from '../models/video-data';
-import './CommentsPanel.css';
+import './CommentsPanel.scss';
 import { countFormatter } from '../utils/format-util';
 
 type Props = {
