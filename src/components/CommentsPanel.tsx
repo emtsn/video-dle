@@ -6,25 +6,18 @@ import './CommentsPanel.scss';
 import { countFormatter } from '../utils/format-util';
 
 type Props = {
-    comments: [CommentData, CommentData, CommentData];
-    showCount: number;
+    isVisible: boolean;
+    comments: CommentData[];
 };
 
 function textFormatMultiline(text: string): React.ReactElement[] {
     return text.split('\n').map((x) => <span>{x}</span>);
 }
 
-export default function CommentsPanel({ comments, showCount }: Props): React.ReactElement {
-    const commentCols = comments.map((x, index) => {
-        if (index >= showCount) {
-            return (
-                <Col span="8">
-                    <Card>
-                        <Skeleton avatar={{ size: 32 }} title={false} paragraph={{ rows: 3 }} />
-                    </Card>
-                </Col>
-            );
-        }
+const COMMENT_DISPLAY_COUNT = 3 as const;
+
+export default function CommentsPanel({ isVisible, comments }: Props): React.ReactElement {
+    const commentCols = comments.map((x) => {
         return (
             <Col span="8">
                 <Card>
@@ -44,8 +37,17 @@ export default function CommentsPanel({ comments, showCount }: Props): React.Rea
             </Col>
         );
     });
+    for (let index = commentCols.length; index < COMMENT_DISPLAY_COUNT; index++) {
+        commentCols.push(
+            <Col span="8">
+                <Card>
+                    <Skeleton avatar={{ size: 32 }} title={false} paragraph={{ rows: 3 }} />
+                </Card>
+            </Col>
+        );
+    }
     return (
-        <div className="comments-panel">
+        <div className={isVisible ? 'comments-panel' : 'comments-panel hidden'}>
             <div className="comments-panel-title">Top Comments</div>
             <Row gutter={8}>{commentCols}</Row>
         </div>

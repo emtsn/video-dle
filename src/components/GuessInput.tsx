@@ -20,6 +20,7 @@ type Props = {
 
 export default function GuessInput({ vidData, handleSelect, disabled }: Props): React.ReactElement {
     const [options, setOptions] = useState<DefaultOptionType[]>([]);
+    const [searchInput, setSearchInput] = useState<string>('');
     const vidDataOptions: OptionWithSearchKey[] = useMemo(() => {
         return vidData.map((vid) => {
             const searchTitle = vid.title.toUpperCase();
@@ -64,7 +65,12 @@ export default function GuessInput({ vidData, handleSelect, disabled }: Props): 
             className="guess-input"
             options={options}
             onSearch={handleSearch}
-            onSelect={(_, option): void => handleSelect(option.key)}
+            onSelect={(_, option): void => {
+                setSearchInput('');
+                handleSelect(option.key);
+            }}
+            onChange={(e) => setSearchInput(e)}
+            value={searchInput}
             defaultOpen={false}
             showSearch={true}
             filterOption={false}

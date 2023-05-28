@@ -121,7 +121,7 @@ export default function PlaylistGameWrapper({ videoData, answerData }: Props): R
                     />
                 </div>
                 <GameContent
-                    key={quizNum + '-' + answer?.videoId}
+                    key={quizNum}
                     vidData={videoData}
                     answer={answer}
                     gameKey={'playlist-quiz-guessed-' + quizNum}

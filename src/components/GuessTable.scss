@@ -1,3 +1,5 @@
+@use '../styles/mixins' as mixins;
+
 .guess-table td.ant-table-cell {
     padding: 0 !important;
     border-radius: 0px;
@@ -25,4 +27,8 @@
 
 .guess-table-col-title {
     min-width: 150px;
+}
+
+.guess-table .ant-table-row {
+    @include mixins.FadeIn;
 }

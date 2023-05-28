@@ -1,3 +1,5 @@
+@use 'styles/mixins';
+
 .main-layout {
     display: flex;
     flex-direction: column;
@@ -5,17 +7,17 @@
     background-color: transparent;
 }
 
-/* .main-layout .ant-layout-header {
-    padding-left: 5%;
-    padding-right: 5%;
-} */
-
 .main-layout .main-layout-content {
     display: flex;
     padding-top: 16px;
     padding-bottom: 16px;
     padding-left: 5%;
     padding-right: 5%;
+}
+
+.content-holder {
+    @include mixins.FadeIn;
+    width: 100%;
 }
 
 .main-layout .ant-layout-footer {

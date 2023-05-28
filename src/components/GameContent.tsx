@@ -100,9 +100,10 @@ export default function GameContent({ vidData, answer, gameKey, onGameOver, comp
                     </Col>
                 )}
             </Row>
-            {showHint && answer && answer.topComments && (
-                <CommentsPanel comments={answer.topComments} showCount={hintCommentsCount} />
-            )}
+            <CommentsPanel
+                isVisible={showHint && !!answer && !!answer.topComments}
+                comments={answer?.topComments?.slice(0, hintCommentsCount) ?? []}
+            />
             <GuessTable
                 vidData={vidData}
                 guessedVideos={guessedVideos}
