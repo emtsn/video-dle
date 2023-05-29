@@ -3,8 +3,7 @@ import { Image, Space } from 'antd';
 import { ModalFunc } from 'antd/es/modal/confirm';
 import { VideoData } from '../models/video-data';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
-import { faXmarkCircle } from '@fortawesome/free-regular-svg-icons';
+import { faCircleCheck, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import './GameOverModal.scss';
 
 /**

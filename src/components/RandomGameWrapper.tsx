@@ -3,7 +3,7 @@ import { Layout, App as AntApp } from 'antd';
 import GameContent from '../components/GameContent';
 import { VideoData } from '../models/video-data';
 import { AnswerData } from '../models/answer-data';
-import { createGameOverModal } from './gameOverModal';
+import { createGameOverModal } from './GameOverModal';
 import { useLocalStorageState } from '../hooks/useLocalStorageState';
 const { Content } = Layout;
 

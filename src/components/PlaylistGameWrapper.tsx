@@ -4,7 +4,7 @@ import GameContent from '../components/GameContent';
 import { VideoData } from '../models/video-data';
 import { AnswerData } from '../models/answer-data';
 import { useLocalStorageStateArray, useLocalStorageStateNumber } from '../hooks/useLocalStorageState';
-import { createGameOverModal } from './gameOverModal';
+import { createGameOverModal } from './GameOverModal';
 import './PlaylistGameWrapper.scss';
 const { Content } = Layout;
 
