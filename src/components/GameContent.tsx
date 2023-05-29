@@ -81,6 +81,7 @@ export default function GameContent({ vidData, answer, gameKey, onGameOver, comp
     const hearts = useMemo(() => {
         return [...new Array(Math.max(0, MAX_GUESSES))].map((_, index) => (
             <HeartFilled
+                key={index}
                 className={
                     index < MAX_GUESSES - guessedVideos.length
                         ? 'heart'

@@ -17,9 +17,9 @@ function tagsFormatter(tags: string[], tagTooltipDict?: Dictionary): ReactElemen
     if (tagTooltipDict !== undefined) {
         return (
             <Space direction="vertical">
-                {tags.map((tagText) => {
+                {tags.map((tagText, index) => {
                     const tagElement = (
-                        <Tag style={{ border: '1px solid #000000' }} color="default" bordered={true}>
+                        <Tag key={index} style={{ border: '1px solid #000000' }} color="default" bordered={true}>
                             {tagText}
                         </Tag>
                     );
@@ -33,8 +33,8 @@ function tagsFormatter(tags: string[], tagTooltipDict?: Dictionary): ReactElemen
     }
     return (
         <Space direction="vertical">
-            {tags.map((x) => (
-                <Tag style={{ border: '1px solid #000000' }} color="default" bordered={true}>
+            {tags.map((x, index) => (
+                <Tag key={index} style={{ border: '1px solid #000000' }} color="default" bordered={true}>
                     {x}
                 </Tag>
             ))}
