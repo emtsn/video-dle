@@ -68,6 +68,7 @@ export default function GuessInput({ vidData, handleSelect, disabled }: Props): 
             onSearch={handleSearch}
             onSelect={(_, option): void => {
                 setSearchInput('');
+                setOptions([]);
                 handleSelect(option.key);
             }}
             onChange={(e) => setSearchInput(e)}
