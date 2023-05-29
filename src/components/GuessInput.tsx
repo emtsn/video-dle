@@ -2,6 +2,7 @@ import { AutoComplete } from 'antd';
 import { DefaultOptionType } from 'antd/es/select';
 import { useCallback, useMemo, useState } from 'react';
 import { VideoData } from '../models/video-data';
+import './GuessInput.scss';
 
 const SEARCH_MIN_CHAR = 3 as const;
 
@@ -75,7 +76,6 @@ export default function GuessInput({ vidData, handleSelect, disabled }: Props): 
             showSearch={true}
             filterOption={false}
             size={'large'}
-            style={{ width: '100%' }}
             disabled={!!disabled}
             notFoundContent={false}
             placeholder="Video Title..."

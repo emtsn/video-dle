@@ -2,7 +2,6 @@ import React from 'react';
 import { Image, Space } from 'antd';
 import { ModalFunc } from 'antd/es/modal/confirm';
 import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
-import { green, red } from '@ant-design/colors';
 import { VideoData } from '../models/video-data';
 
 /**
@@ -30,9 +29,9 @@ export function createGameOverModal(
         ? answerVidData.thumbnailUrl
         : `https://i.ytimg.com/vi/${answerVidData.videoId}/hqdefault.jpg`;
     const icon = isSuccess ? (
-        <CheckCircleFilled style={{ color: green.primary }} />
+        <CheckCircleFilled className="green-primary" />
     ) : (
-        <CloseCircleFilled style={{ color: red.primary }} />
+        <CloseCircleFilled className="red-primary" />
     );
     modal.info({
         className: 'gameover-modal',

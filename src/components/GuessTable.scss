@@ -1,3 +1,4 @@
+@use '../styles/colors';
 @use '../styles/animations';
 
 .guess-table {
@@ -15,12 +16,12 @@
 }
 
 .guess-table .ant-empty .anticon {
-    color: #3b3b3b;
+    color: colors.$dark-grey-2;
     font-size: 84px;
 }
 
 .guess-table .ant-table {
-    border: 1px solid #d9d9d9;
+    border: 1px solid colors.$border;
     border-radius: 8px;
     overflow: scroll;
 }
@@ -37,9 +38,26 @@
     animation: animations.$fade 1s;
     @for $i from 1 through 8 {
         .ant-table-cell:nth-child(#{$i}) {
-            animation: animations.$fade 1s;
+            animation-name: animations.$fade;
+            animation-duration: 1s;
             animation-fill-mode: backwards;
             animation-delay: $i * (.05s);
         }
     }
+}
+
+.guess-table tr.ant-table-row > td.ant-table-cell.color-correct {
+    background-color: colors.$green-2;
+}
+
+.guess-table tr.ant-table-row > td.ant-table-cell.color-incorrect {
+    background-color: colors.$red-2;
+}
+
+.guess-table tr.ant-table-row > td.ant-table-cell.color-close {
+    background-color: colors.$orange-2;
+}
+
+.guess-table .ant-table-cell > div {
+    padding: 16px;
 }

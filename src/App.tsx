@@ -38,7 +38,7 @@ function App(): React.ReactElement {
                 <RandomGameWrapper videoData={videoData} />
             )}
             <Footer>
-                <a href="https://github.com/emtsn" style={{ color: '#828282' }}>
+                <a className="text-subtext" href="https://github.com/emtsn">
                     <Space>
                         <GithubOutlined />
                         emtsn

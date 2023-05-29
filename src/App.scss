@@ -1,3 +1,4 @@
+@use 'styles/colors';
 @use 'styles/animations';
 
 .main-layout {
@@ -22,4 +23,16 @@
 
 .main-layout .ant-layout-footer {
     z-index: 2;
+}
+
+.text-subtext {
+    color: colors.$grey-4;
+}
+
+.green-primary {
+    color: colors.$green-primary !important;
+}
+
+.red-primary {
+    color: colors.$red-primary !important;
 }

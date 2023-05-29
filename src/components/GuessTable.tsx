@@ -3,7 +3,6 @@ import { TableColumnsType, ConfigProvider, Empty, Space, Table, Tag, Tooltip } f
 import { VideoData } from '../models/video-data';
 import { AnswerData } from '../models/answer-data';
 import { ArrowDownOutlined, ArrowUpOutlined, SearchOutlined } from '@ant-design/icons';
-import { green, orange, red } from '@ant-design/colors';
 import './GuessTable.scss';
 import { Dictionary, TagDescDictionary } from '../models/tags';
 import { countFormatter, timeFormatter } from '../utils/format-util';
@@ -141,13 +140,13 @@ function tagsToAnswerRelative(answerTags: string[] | undefined, guessTags: strin
     return AnswerRelative.Equal;
 }
 
-const COLOR_GREEN = green[2];
-const COLOR_RED = red[2];
-const COLOR_ORANGE = orange[2];
+const COLOR_CORRECT = 'color-correct';
+const COLOR_CLOSE = 'color-close';
+const COLOR_INCORRECT = 'color-incorrect';
 
 type RenderedCell = {
     props: {
-        style: React.CSSProperties;
+        className?: string;
     };
     children: React.ReactNode;
 };
@@ -159,46 +158,44 @@ type RenderedCell = {
  * @returns
  */
 function colouredCell(label: string | React.ReactElement, ansRelative: AnswerRelative): RenderedCell {
-    let bgColor: string | undefined = undefined;
+    let colorClass: string | undefined = undefined;
     let icon: React.ReactElement | undefined = undefined;
     switch (ansRelative) {
         case AnswerRelative.None:
             break;
         case AnswerRelative.Equal:
-            bgColor = COLOR_GREEN;
+            colorClass = COLOR_CORRECT;
             icon = undefined; //<CheckOutlined />;
             break;
         case AnswerRelative.NotEqual:
-            bgColor = COLOR_RED;
+            colorClass = COLOR_INCORRECT;
             break;
         case AnswerRelative.Close:
-            bgColor = COLOR_ORANGE;
+            colorClass = COLOR_CLOSE;
             break;
         case AnswerRelative.SlightlyAbove:
-            bgColor = COLOR_ORANGE;
+            colorClass = COLOR_CLOSE;
             icon = <ArrowUpOutlined />;
             break;
         case AnswerRelative.Above:
-            bgColor = COLOR_RED;
+            colorClass = COLOR_INCORRECT;
             icon = <ArrowUpOutlined />;
             break;
         case AnswerRelative.SlightlyBelow:
-            bgColor = COLOR_ORANGE;
+            colorClass = COLOR_CLOSE;
             icon = <ArrowDownOutlined />;
             break;
         case AnswerRelative.Below:
-            bgColor = COLOR_RED;
+            colorClass = COLOR_INCORRECT;
             icon = <ArrowDownOutlined />;
             break;
     }
     return {
         props: {
-            style: {
-                backgroundColor: bgColor,
-            },
+            className: colorClass,
         },
         children: (
-            <Space style={{ padding: '16px' }}>
+            <Space>
                 {icon}
                 <>{label}</>
             </Space>
