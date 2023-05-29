@@ -1,0 +1,18 @@
+
+@use '../styles/animations';
+
+.heart {
+    color: red;
+}
+
+.heart.hidden {
+    animation-name: animations.$shake, animations.$fade;
+    animation-duration: 0.5s;
+    animation-direction: normal, reverse;
+    animation-fill-mode: none;
+    opacity: 0;
+}
+
+.hint-button {
+    animation: animations.$fade 1s;
+}

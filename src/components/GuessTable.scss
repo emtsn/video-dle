@@ -1,4 +1,8 @@
-@use '../styles/mixins' as mixins;
+@use '../styles/animations';
+
+.guess-table {
+    animation: animations.$fade 0.5s;
+}
 
 .guess-table td.ant-table-cell {
     padding: 0 !important;
@@ -30,5 +34,12 @@
 }
 
 .guess-table .ant-table-row {
-    @include mixins.FadeIn;
+    animation: animations.$fade 1s;
+    @for $i from 1 through 8 {
+        .ant-table-cell:nth-child(#{$i}) {
+            animation: animations.$fade 1s;
+            animation-fill-mode: backwards;
+            animation-delay: $i * (.05s);
+        }
+    }
 }

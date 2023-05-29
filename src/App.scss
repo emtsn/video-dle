@@ -1,4 +1,4 @@
-@use 'styles/mixins';
+@use 'styles/animations';
 
 .main-layout {
     display: flex;
@@ -8,6 +8,7 @@
 }
 
 .main-layout .main-layout-content {
+    animation: animations.$fade 1s;
     display: flex;
     padding-top: 16px;
     padding-bottom: 16px;
@@ -16,7 +17,6 @@
 }
 
 .content-holder {
-    @include mixins.FadeIn;
     width: 100%;
 }
 

@@ -7,6 +7,7 @@ import { VideoData } from '../models/video-data';
 import { AnswerData } from '../models/answer-data';
 import CommentsPanel from './CommentsPanel';
 import { useLocalStorageStateArray } from '../hooks/useLocalStorageState';
+import './GameContent.scss';
 
 const MAX_GUESSES = 6;
 
@@ -32,6 +33,7 @@ export default function GameContent({ vidData, answer, gameKey, onGameOver, comp
         [],
         (val) => typeof val === 'string'
     );
+    const [heartAnimationPlaying, setHeartAnimationPlaying] = useState<boolean>(false);
     const hintCommentsCount =
         playState === PlayState.Completed ? Number.MAX_VALUE : Math.floor((guessedVideos.length + 1) / 2);
 
@@ -87,14 +89,16 @@ export default function GameContent({ vidData, answer, gameKey, onGameOver, comp
                 </Col>
                 <Col span="8">
                     <Space>
-                        {new Array(Math.max(0, MAX_GUESSES - guessedVideos.length)).fill(
-                            <HeartFilled style={{ color: 'red' }} />
-                        )}
+                        {[...new Array(Math.max(0, MAX_GUESSES))].map((_, index) => (
+                            <HeartFilled
+                                className={index < MAX_GUESSES - guessedVideos.length ? 'heart' : 'heart hidden'}
+                            />
+                        ))}
                     </Space>
                 </Col>
                 {answer && answer.topComments && hintCommentsCount > 0 && (
                     <Col span="4" style={{ display: 'flex', justifyContent: 'end' }}>
-                        <Button type="primary" onClick={() => setShowHint(!showHint)}>
+                        <Button className="hint-button" type="primary" onClick={() => setShowHint(!showHint)}>
                             Hints
                         </Button>
                     </Col>
