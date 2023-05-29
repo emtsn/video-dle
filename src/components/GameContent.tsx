@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Col, Row, Space } from 'antd';
 import { HeartFilled } from '@ant-design/icons';
 import GuessTable from './GuessTable';
@@ -39,6 +39,7 @@ export default function GameContent({ vidData, answer, gameKey, onGameOver, comp
 
     const handleSelect = useCallback(
         (videoId: string): void => {
+            setHeartAnimationPlaying(true);
             setGuessedVideos((prev) => [videoId, ...prev]);
         },
         [setGuessedVideos]
@@ -77,6 +78,18 @@ export default function GameContent({ vidData, answer, gameKey, onGameOver, comp
         }
     }, [answer, completed]);
 
+    const hearts = useMemo(() => {
+        return [...new Array(Math.max(0, MAX_GUESSES))].map((_, index) => (
+            <HeartFilled
+                className={
+                    index < MAX_GUESSES - guessedVideos.length
+                        ? 'heart'
+                        : 'heart hidden' + (heartAnimationPlaying ? ' animated' : '')
+                }
+            />
+        ));
+    }, [guessedVideos, heartAnimationPlaying]);
+
     return (
         <Space direction="vertical" style={{ display: 'flex' }}>
             <Row align="middle" justify="start" gutter={8}>
@@ -88,13 +101,7 @@ export default function GameContent({ vidData, answer, gameKey, onGameOver, comp
                     ></GuessInput>
                 </Col>
                 <Col span="8">
-                    <Space>
-                        {[...new Array(Math.max(0, MAX_GUESSES))].map((_, index) => (
-                            <HeartFilled
-                                className={index < MAX_GUESSES - guessedVideos.length ? 'heart' : 'heart hidden'}
-                            />
-                        ))}
-                    </Space>
+                    <Space>{hearts}</Space>
                 </Col>
                 {answer && answer.topComments && hintCommentsCount > 0 && (
                     <Col span="4" style={{ display: 'flex', justifyContent: 'end' }}>

@@ -2,15 +2,21 @@
 @use '../styles/animations';
 
 .heart {
+    $duration: 0.5s;
     color: red;
-}
-
-.heart.hidden {
-    animation-name: animations.$shake, animations.$fade;
-    animation-duration: 0.5s;
-    animation-direction: normal, reverse;
-    animation-fill-mode: none;
-    opacity: 0;
+    transition: opacity $duration;
+    &.hidden {
+        &.animated {
+            animation-name: animations.$shake;
+            animation-duration: $duration;
+            animation-direction: normal;
+            animation-fill-mode: none;
+        }
+        opacity: 0;
+    }
+    &:not(.hidden) {
+        animation: animations.$fade $duration;
+    }
 }
 
 .hint-button {
