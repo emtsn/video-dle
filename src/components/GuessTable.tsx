@@ -152,20 +152,56 @@ type RenderedCell = {
 };
 
 /**
- * Get a coloured Table Cell for the label with AnswerRelative
+ * Get a Table Cell for the label with AnswerRelative
  * @param label
  * @param ansRelative
  * @returns
  */
-function colouredCell(label: string | React.ReactElement, ansRelative: AnswerRelative): RenderedCell {
-    let colorClass: string | undefined = undefined;
+function createCell(label: string | React.ReactElement, ansRelative: AnswerRelative): React.ReactElement {
     let icon: React.ReactElement | undefined = undefined;
     switch (ansRelative) {
         case AnswerRelative.None:
             break;
         case AnswerRelative.Equal:
-            colorClass = COLOR_CORRECT;
             icon = undefined; //<CheckOutlined />;
+            break;
+        case AnswerRelative.NotEqual:
+            break;
+        case AnswerRelative.Close:
+            break;
+        case AnswerRelative.SlightlyAbove:
+            icon = <ArrowUpOutlined />;
+            break;
+        case AnswerRelative.Above:
+            icon = <ArrowUpOutlined />;
+            break;
+        case AnswerRelative.SlightlyBelow:
+            icon = <ArrowDownOutlined />;
+            break;
+        case AnswerRelative.Below:
+            icon = <ArrowDownOutlined />;
+            break;
+    }
+    return (
+        <Space>
+            {icon}
+            <>{label}</>
+        </Space>
+    );
+}
+
+/**
+ * Get props (i.e. className) for the table cell according to AnswerRelative
+ * @param ansRelative
+ * @returns
+ */
+function getCellProps(ansRelative: AnswerRelative): React.HTMLAttributes<any> {
+    let colorClass: string | undefined = undefined;
+    switch (ansRelative) {
+        case AnswerRelative.None:
+            break;
+        case AnswerRelative.Equal:
+            colorClass = COLOR_CORRECT;
             break;
         case AnswerRelative.NotEqual:
             colorClass = COLOR_INCORRECT;
@@ -175,31 +211,19 @@ function colouredCell(label: string | React.ReactElement, ansRelative: AnswerRel
             break;
         case AnswerRelative.SlightlyAbove:
             colorClass = COLOR_CLOSE;
-            icon = <ArrowUpOutlined />;
             break;
         case AnswerRelative.Above:
             colorClass = COLOR_INCORRECT;
-            icon = <ArrowUpOutlined />;
             break;
         case AnswerRelative.SlightlyBelow:
             colorClass = COLOR_CLOSE;
-            icon = <ArrowDownOutlined />;
             break;
         case AnswerRelative.Below:
             colorClass = COLOR_INCORRECT;
-            icon = <ArrowDownOutlined />;
             break;
     }
     return {
-        props: {
-            className: colorClass,
-        },
-        children: (
-            <Space>
-                {icon}
-                <>{label}</>
-            </Space>
-        ),
+        className: colorClass,
     };
 }
 
@@ -238,7 +262,8 @@ export default function GuessTable({ vidData, guessedVideos, answer, showAnswer 
             key: 'title',
             width: '30%',
             className: 'guess-table-col-title',
-            render: (title) => colouredCell(title, AnswerRelative.None),
+            render: (title) => createCell(title, AnswerRelative.None),
+            onCell: () => getCellProps(AnswerRelative.None),
         },
         {
             title: 'Channel',
@@ -246,40 +271,48 @@ export default function GuessTable({ vidData, guessedVideos, answer, showAnswer 
             key: 'uploaderName',
             width: '15%',
             render: (uploaderName) =>
-                colouredCell(uploaderName, stringsToAnswerRelative(answerData?.uploaderName, uploaderName)),
+                createCell(uploaderName, stringsToAnswerRelative(answerData?.uploaderName, uploaderName)),
+            onCell: ({ uploaderName }) => getCellProps(stringsToAnswerRelative(answerData?.uploaderName, uploaderName)),
         },
         {
             title: 'Length',
             dataIndex: 'length',
             key: 'length',
-            render: (length) =>
-                colouredCell(timeFormatter(length), numbersToAnswerRelative(answerData?.length, length)),
+            render: (length) => createCell(timeFormatter(length), numbersToAnswerRelative(answerData?.length, length)),
+            onCell: ({ length }) => getCellProps(numbersToAnswerRelative(answerData?.length, length)),
         },
         {
             title: 'Views',
             dataIndex: 'views',
             key: 'views',
-            render: (views) => colouredCell(countFormatter(views), numbersToAnswerRelative(answerData?.views, views)),
+            render: (views) => createCell(countFormatter(views), numbersToAnswerRelative(answerData?.views, views)),
+            onCell: ({ views }) => getCellProps(numbersToAnswerRelative(answerData?.views, views)),
         },
         {
             title: 'Likes',
             dataIndex: 'likes',
             key: 'likes',
-            render: (likes) => colouredCell(countFormatter(likes), numbersToAnswerRelative(answerData?.likes, likes)),
+            render: (likes) => createCell(countFormatter(likes), numbersToAnswerRelative(answerData?.likes, likes)),
+            onCell: ({ likes }) => getCellProps(numbersToAnswerRelative(answerData?.likes, likes)),
         },
         {
             title: 'Comments',
             dataIndex: 'commentCount',
             key: 'commentCount',
-            render: (comments) =>
-                colouredCell(countFormatter(comments), numbersToAnswerRelative(answerData?.commentCount, comments)),
+            render: (commentCount) =>
+                createCell(
+                    countFormatter(commentCount),
+                    numbersToAnswerRelative(answerData?.commentCount, commentCount)
+                ),
+            onCell: ({ commentCount }) => getCellProps(numbersToAnswerRelative(answerData?.commentCount, commentCount)),
         },
         {
             title: 'Uploaded',
             dataIndex: 'uploadDate',
             key: 'uploadDate',
             render: (uploadDate) =>
-                colouredCell(dateFormatter(uploadDate), dateToAnswerRelative(answerData?.uploadDate, uploadDate)),
+                createCell(dateFormatter(uploadDate), dateToAnswerRelative(answerData?.uploadDate, uploadDate)),
+            onCell: ({ uploadDate }) => getCellProps(dateToAnswerRelative(answerData?.uploadDate, uploadDate)),
         },
         // {
         //     title: 'Original Creator',
@@ -291,10 +324,11 @@ export default function GuessTable({ vidData, guessedVideos, answer, showAnswer 
             dataIndex: 'categories',
             key: 'categories',
             render: (categories) =>
-                colouredCell(
+                createCell(
                     tagsFormatter(categories, TagDescDictionary),
                     tagsToAnswerRelative(answerData?.categories, categories)
                 ),
+            onCell: ({ categories }) => getCellProps(tagsToAnswerRelative(answerData?.categories, categories)),
         },
     ];
     return (
