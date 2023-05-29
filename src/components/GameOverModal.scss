@@ -1,0 +1,16 @@
+.gameover-modal {
+    .ant-modal-content > .ant-modal-body > .ant-modal-confirm-body-wrapper > .ant-modal-confirm-body {
+        .ant-modal-confirm-title {
+            display: flex;
+            align-items: center;
+        }
+        .ant-modal-confirm-content {
+            max-width: 100%;
+        }
+    }
+
+    .gameover-icon {
+        margin-right: 12px;
+        font-size: 22px;
+    }
+}

@@ -1,8 +1,11 @@
 import React from 'react';
 import { Image, Space } from 'antd';
 import { ModalFunc } from 'antd/es/modal/confirm';
-import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 import { VideoData } from '../models/video-data';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { faXmarkCircle } from '@fortawesome/free-regular-svg-icons';
+import './GameOverModal.scss';
 
 /**
  * Display modal for when the game completes
@@ -29,16 +32,22 @@ export function createGameOverModal(
         ? answerVidData.thumbnailUrl
         : `https://i.ytimg.com/vi/${answerVidData.videoId}/hqdefault.jpg`;
     const icon = isSuccess ? (
-        <CheckCircleFilled className="green-primary" />
+        <FontAwesomeIcon className="green-primary" icon={faCircleCheck} />
     ) : (
-        <CloseCircleFilled className="red-primary" />
+        <FontAwesomeIcon className="red-primary" icon={faXmarkCircle} />
     );
     modal.info({
         className: 'gameover-modal',
-        title: title,
-        icon: icon,
+        wrapClassName: 'gameover-modal-wrap',
+        title: (
+            <>
+                <span className={'gameover-icon'}>{icon}</span>
+                <span>{title}</span>
+            </>
+        ),
+        icon: <></>,
         content: (
-            <Space style={{ marginLeft: '-34px' }} direction="vertical">
+            <Space direction="vertical">
                 <hr style={{ height: '1px', borderWidth: 0, backgroundColor: '#5c5c5c' }} />
                 {extraText && <div>{extraText}</div>}
                 <div>
