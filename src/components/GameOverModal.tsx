@@ -1,10 +1,19 @@
 import React from 'react';
-import { Image, Space } from 'antd';
+import { Card, Col, Image, Row, Space, Statistic } from 'antd';
 import { ModalFunc } from 'antd/es/modal/confirm';
 import { VideoData } from '../models/video-data';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import './GameOverModal.scss';
+
+type GameStats = {
+    /* number of won games */
+    successGames: number;
+    /* number of total complete games */
+    totalGames: number;
+    /* number of guesses in complete games */
+    guessCompleteCount: number;
+};
 
 /**
  * Display modal for when the game completes
@@ -20,7 +29,8 @@ export function createGameOverModal(
     isSuccess: boolean,
     answerVidData: VideoData,
     guessCount: number,
-    onNext?: () => void
+    onNext?: () => void,
+    stats?: GameStats
 ): void {
     const title = isSuccess
         ? `Congrats! You found the right video in ${guessCount} ${guessCount === 1 ? 'try' : 'tries'}!`
@@ -47,12 +57,12 @@ export function createGameOverModal(
         icon: <></>,
         content: (
             <Space direction="vertical">
-                <hr style={{ height: '1px', borderWidth: 0, backgroundColor: '#5c5c5c' }} />
+                <hr className="modal-separator" />
                 {extraText && <div>{extraText}</div>}
                 <div>
                     <b>{answerVidData.title}</b>
                     {' by ' + answerVidData.uploaderName}
-                    {!!answerVidData.originalCreator && ' (Original: ' + answerVidData.originalCreator + ')'}
+                    {!!answerVidData.originalCreator && ' (Original by ' + answerVidData.originalCreator + ')'}
                 </div>
                 <a href={videoUrl} target="_blank" rel="noreferrer">
                     <Image
@@ -63,6 +73,30 @@ export function createGameOverModal(
                         placeholder={true}
                     />
                 </a>
+                {!!stats && (
+                    <Row gutter={8}>
+                        <Col span={12}>
+                            <Card>
+                                <Statistic
+                                    title="Win Percentage"
+                                    value={(stats.successGames * 100) / stats.totalGames}
+                                    precision={1}
+                                    suffix="%"
+                                />
+                            </Card>
+                        </Col>
+                        <Col span={12}>
+                            <Card>
+                                <Statistic
+                                    title="Avg. Guesses"
+                                    value={stats.guessCompleteCount / stats.totalGames}
+                                    precision={1}
+                                    // suffix=" tries"
+                                />
+                            </Card>
+                        </Col>
+                    </Row>
+                )}
             </Space>
         ),
         maskClosable: true,

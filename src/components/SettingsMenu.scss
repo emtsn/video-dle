@@ -1,0 +1,17 @@
+.settings-modal {
+    .ant-modal-content {
+        min-height: 200px;
+    }
+    
+    .ant-modal-body > .ant-space {
+        width: 100%;
+    }
+
+    hr {
+        margin-bottom: 16px
+    }
+
+    h3 {
+        margin: 0
+    }
+}

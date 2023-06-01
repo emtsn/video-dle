@@ -36,3 +36,9 @@
 .red-primary {
     color: colors.$red-primary !important;
 }
+
+.modal-separator {
+    height: 1px;
+    border-width: 0;
+    background-color: colors.$dark-grey-2
+}

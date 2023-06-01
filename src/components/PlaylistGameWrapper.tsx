@@ -38,6 +38,11 @@ export default function PlaylistGameWrapper({ videoData, answerData }: Props): R
         [],
         isCompletion
     );
+    const [totalCompleteGuessCount, setTotalCompleteGuessCount] = useLocalStorageStateNumber(
+        'playlist-guess-total',
+        0,
+        (val) => val >= 0
+    );
     const answer = useMemo(() => {
         const videos = Object.values(videoData);
         if (videos.length > 0) {
@@ -58,7 +63,15 @@ export default function PlaylistGameWrapper({ videoData, answerData }: Props): R
                         setQuizNum((val) => Math.min(answerData.length - 1, val + 1));
                     };
                 }
-                createGameOverModal(modal, isSuccess, videoData[answer.videoId], guessCount, onNext);
+                setTotalCompleteGuessCount((x) => x + guessCount);
+                const successCount =
+                    completedQuizzes.filter((x) => x === CompletionState.Success).length + (isSuccess ? 1 : 0);
+                const completedCount = completedQuizzes.filter((x) => isCompleted(x)).length + 1;
+                createGameOverModal(modal, isSuccess, videoData[answer.videoId], guessCount, onNext, {
+                    successGames: successCount,
+                    totalGames: completedCount,
+                    guessCompleteCount: totalCompleteGuessCount + guessCount,
+                });
                 setCompletedQuizzes((prevCompleted) => {
                     const completed = new Array<CompletionState>(answerData.length);
                     for (let index = 0; index < completed.length; index++) {
@@ -77,7 +90,18 @@ export default function PlaylistGameWrapper({ videoData, answerData }: Props): R
                 });
             }
         },
-        [modal, videoData, answerData, answer, quizNum, setQuizNum, setCompletedQuizzes]
+        [
+            modal,
+            videoData,
+            answerData,
+            answer,
+            quizNum,
+            completedQuizzes,
+            totalCompleteGuessCount,
+            setQuizNum,
+            setCompletedQuizzes,
+            setTotalCompleteGuessCount,
+        ]
     );
 
     const getCompletionClass = useCallback(
