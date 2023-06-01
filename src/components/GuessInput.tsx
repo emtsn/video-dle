@@ -1,4 +1,4 @@
-import { AutoComplete } from 'antd';
+import { AutoComplete, Space } from 'antd';
 import { DefaultOptionType } from 'antd/es/select';
 import { useCallback, useMemo, useState } from 'react';
 import { VideoData } from '../models/video-data';
@@ -8,7 +8,7 @@ const SEARCH_MIN_CHAR = 3 as const;
 
 interface OptionWithSearchKey extends DefaultOptionType {
     key: string;
-    label: string;
+    label: React.ReactNode;
     value: string;
     searchKeys: string[];
 }
@@ -28,7 +28,12 @@ export default function GuessInput({ vidData, handleSelect, disabled }: Props): 
             const searchUploaderName = vid.uploaderName.toUpperCase();
             return {
                 key: vid.videoId,
-                label: vid.title,
+                label: (
+                    <div className="guess-input-option">
+                        <div className="guess-input-option-title">{vid.title}</div>
+                        <div className="guess-input-option-uploader">{vid.uploaderName}</div>
+                    </div>
+                ),
                 value: vid.title,
                 searchKeys: [
                     ...searchTitle.split(' '),

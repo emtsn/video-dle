@@ -1,3 +1,19 @@
 .guess-input {
     width: 100%;
 }
+
+.guess-input-option {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+    >.guess-input-option-title {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    >.guess-input-option-uploader {
+        flex-shrink: 0;
+        color: rgba(0, 0, 0, 0.45);
+    }
+}
