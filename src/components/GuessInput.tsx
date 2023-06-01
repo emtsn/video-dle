@@ -1,10 +1,18 @@
-import { AutoComplete, Space } from 'antd';
+import { AutoComplete } from 'antd';
 import { DefaultOptionType } from 'antd/es/select';
 import { useCallback, useMemo, useState } from 'react';
 import { VideoData } from '../models/video-data';
 import './GuessInput.scss';
 
+/**
+ * Minimum chars required for valid search.
+ * At least one word must be as long as this value to be a valid search.
+ */
 const SEARCH_MIN_CHAR = 3 as const;
+/**
+ * Minimum chars required in a word to be considered in the search algorithm
+ */
+const SEARCH_MIN_WORD_CHAR = 2 as const;
 
 interface OptionWithSearchKey extends DefaultOptionType {
     key: string;
@@ -49,8 +57,8 @@ export default function GuessInput({ vidData, handleSelect, disabled }: Props): 
             if (!value || value.length < SEARCH_MIN_CHAR || vidDataOptions.length <= 0) {
                 setOptions([]);
             } else {
-                const searchValues: string[] = value.split(' ').filter((x) => x.length >= SEARCH_MIN_CHAR);
-                if (searchValues.length < 1) {
+                const searchValues: string[] = value.split(' ').filter((x) => x.length >= SEARCH_MIN_WORD_CHAR);
+                if (searchValues.filter((x) => x.length >= SEARCH_MIN_CHAR).length < 1) {
                     setOptions([]);
                 } else {
                     setOptions(
