@@ -7,6 +7,14 @@ export interface CommentData {
 }
 
 /**
+ * Metadata information about the Original Video
+ */
+export interface OriginalVideo {
+    videoFrom?: string;
+    creatorName?: string;
+}
+
+/**
  * Metadata information about the YT Video
  */
 export interface VideoData {
@@ -22,7 +30,8 @@ export interface VideoData {
     categories: string[];
     uploaderName: string;
     uploaderUser?: string;
-    originalCreator?: string;
+    originalVideo?: OriginalVideo;
     currentDate: string;
     topComments?: CommentData[];
+    additionalKeys?: string[];
 }

@@ -34,6 +34,7 @@ export default function GuessInput({ vidData, handleSelect, disabled }: Props): 
         return vidData.map((vid) => {
             const searchTitle = vid.title.toUpperCase();
             const searchUploaderName = vid.uploaderName.toUpperCase();
+            const additionalKeys = vid.additionalKeys?.map((x) => x.toUpperCase()) ?? [];
             return {
                 key: vid.videoId,
                 label: (
@@ -48,6 +49,7 @@ export default function GuessInput({ vidData, handleSelect, disabled }: Props): 
                     ...searchUploaderName.split(' '),
                     searchTitle.replaceAll(' ', ''),
                     searchUploaderName.replaceAll(' ', ''),
+                    ...additionalKeys,
                 ],
             };
         });

@@ -1,6 +1,6 @@
 import React, { ReactElement, useMemo } from 'react';
 import { TableColumnsType, ConfigProvider, Empty, Space, Table, Tag, Tooltip } from 'antd';
-import { VideoData } from '../models/video-data';
+import { OriginalVideo, VideoData } from '../models/video-data';
 import { AnswerData } from '../models/answer-data';
 import { ArrowDownOutlined, ArrowUpOutlined, SearchOutlined } from '@ant-design/icons';
 import './GuessTable.scss';
@@ -144,20 +144,13 @@ const COLOR_CORRECT = 'color-correct';
 const COLOR_CLOSE = 'color-close';
 const COLOR_INCORRECT = 'color-incorrect';
 
-type RenderedCell = {
-    props: {
-        className?: string;
-    };
-    children: React.ReactNode;
-};
-
 /**
  * Get a Table Cell for the label with AnswerRelative
  * @param label
  * @param ansRelative
  * @returns
  */
-function createCell(label: string | React.ReactElement, ansRelative: AnswerRelative): React.ReactElement {
+function createCell(label: React.ReactNode, ansRelative: AnswerRelative): React.ReactElement {
     let icon: React.ReactElement | undefined = undefined;
     switch (ansRelative) {
         case AnswerRelative.None:
@@ -188,6 +181,19 @@ function createCell(label: string | React.ReactElement, ansRelative: AnswerRelat
             <>{label}</>
         </Space>
     );
+}
+
+/**
+ * Create cell label for the uploaderName
+ * @param uploaderName
+ * @param originalVideo
+ * @returns
+ */
+function uploaderLabel(uploaderName: string, originalVideo?: OriginalVideo): React.ReactNode {
+    if (!!originalVideo && !!originalVideo.creatorName) {
+        return <Tooltip title={'Original by ' + originalVideo.creatorName}>{uploaderName}*</Tooltip>;
+    }
+    return uploaderName;
 }
 
 /**
@@ -270,8 +276,11 @@ export default function GuessTable({ vidData, guessedVideos, answer, showAnswer 
             dataIndex: 'uploaderName',
             key: 'uploaderName',
             width: '15%',
-            render: (uploaderName) =>
-                createCell(uploaderName, stringsToAnswerRelative(answerData?.uploaderName, uploaderName)),
+            render: (uploaderName, record) =>
+                createCell(
+                    uploaderLabel(uploaderName, record.originalVideo),
+                    stringsToAnswerRelative(answerData?.uploaderName, uploaderName)
+                ),
             onCell: ({ uploaderName }) => getCellProps(stringsToAnswerRelative(answerData?.uploaderName, uploaderName)),
         },
         {

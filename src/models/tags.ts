@@ -4,7 +4,7 @@ export const VideoCategories = [
     'Animation',
     'Animals',
     'Comedy',
-    'Cooking',
+    'Food & Cooking',
     'Controversial',
     'Documentary',
     'Education',
@@ -38,13 +38,13 @@ export type VideoCategoriesDictionary = {
 };
 
 export const TagDescDictionary: VideoCategoriesDictionary = {
-    Activism: '',
+    Activism: 'Produced in support or opposition of social or political causes',
     Advertisement: 'Produced by an organization for the purpose of promoting a product or idea',
     Animation: 'Features any form of animation',
     Animals: 'Features real or fake animals',
     Comedy: '',
-    Cooking: '',
-    Controversial: 'Features people and ideas with questionable values or validity',
+    'Food & Cooking': '',
+    Controversial: 'Features people and/or ideas with questionable values or validity',
     Documentary: '',
     Education: '',
     Essay: 'Video essays',

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Col, Image, Row, Space, Statistic } from 'antd';
 import { ModalFunc } from 'antd/es/modal/confirm';
-import { VideoData } from '../models/video-data';
+import { OriginalVideo, VideoData } from '../models/video-data';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import './GameOverModal.scss';
@@ -14,6 +14,16 @@ type GameStats = {
     /* number of guesses in complete games */
     guessCompleteCount: number;
 };
+
+/**
+ * Format the text for the original video information
+ * @param originalVideo
+ * @returns
+ */
+function formatOriginalVideo(originalVideo: OriginalVideo): string {
+    if (originalVideo.videoFrom) return `(Original from ${originalVideo.videoFrom})`;
+    return `(Original by ${originalVideo.creatorName})`;
+}
 
 /**
  * Display modal for when the game completes
@@ -62,8 +72,14 @@ export function createGameOverModal(
                 <div>
                     <b>{answerVidData.title}</b>
                     {' by ' + answerVidData.uploaderName}
-                    {!!answerVidData.originalCreator && ' (Original by ' + answerVidData.originalCreator + ')'}
+                    {!!answerVidData.originalVideo && (
+                        <>
+                            <br />
+                            {' ' + formatOriginalVideo(answerVidData.originalVideo)}
+                        </>
+                    )}
                 </div>
+
                 <a href={videoUrl} target="_blank" rel="noreferrer">
                     <Image
                         // alt="Thumbnail of the video"
