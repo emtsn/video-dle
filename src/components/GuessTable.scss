@@ -61,3 +61,7 @@
 .guess-table .ant-table-cell > div {
     padding: 16px;
 }
+
+.guess-table th.ant-table-cell {
+    white-space: nowrap;
+}

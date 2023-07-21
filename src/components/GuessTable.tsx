@@ -298,14 +298,22 @@ export default function GuessTable({ vidData, guessedVideos, answer, showAnswer 
             onCell: ({ views }) => getCellProps(numbersToAnswerRelative(answerData?.views, views)),
         },
         {
-            title: 'Likes',
+            title: (
+                <>
+                    Likes <br /> (per 100k views)
+                </>
+            ),
             dataIndex: 'likes',
             key: 'likes',
             render: (likes) => createCell(countFormatter(likes), numbersToAnswerRelative(answerData?.likes, likes)),
             onCell: ({ likes }) => getCellProps(numbersToAnswerRelative(answerData?.likes, likes)),
         },
         {
-            title: 'Comments',
+            title: (
+                <>
+                    Comments <br /> (per 100k views)
+                </>
+            ),
             dataIndex: 'commentCount',
             key: 'commentCount',
             render: (commentCount) =>
