@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { RouterProvider, createBrowserRouter, redirect } from 'react-router-dom';
 import PlaylistGameWrapper from './components/PlaylistGameWrapper';
 import RandomGameWrapper from './components/RandomGameWrapper';
@@ -26,33 +26,37 @@ function App(): React.ReactElement {
                 }
             });
     }, []);
-    const router = createBrowserRouter([
-        {
-            path: '/',
-            loader: () => redirect('/play'),
-            errorElement: (
-                <PageLayout>
-                    <ErrorPageContent />
-                </PageLayout>
-            ),
-        },
-        {
-            path: '/play',
-            element: (
-                <PageLayout>
-                    <PlaylistGameWrapper videoData={videoData} answerData={answerData} />
-                </PageLayout>
-            ),
-        },
-        {
-            path: '/random',
-            element: (
-                <PageLayout>
-                    <RandomGameWrapper videoData={videoData} />
-                </PageLayout>
-            ),
-        },
-    ]);
+    const router = useMemo(
+        () =>
+            createBrowserRouter([
+                {
+                    path: '/',
+                    loader: () => redirect('/play'),
+                    errorElement: (
+                        <PageLayout>
+                            <ErrorPageContent />
+                        </PageLayout>
+                    ),
+                },
+                {
+                    path: '/play',
+                    element: (
+                        <PageLayout>
+                            <PlaylistGameWrapper videoData={videoData} answerData={answerData} />
+                        </PageLayout>
+                    ),
+                },
+                {
+                    path: '/random',
+                    element: (
+                        <PageLayout>
+                            <RandomGameWrapper videoData={videoData} />
+                        </PageLayout>
+                    ),
+                },
+            ]),
+        [videoData, answerData]
+    );
     return <RouterProvider router={router} />;
 }
 
