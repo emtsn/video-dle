@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { Layout, App as AntApp } from 'antd';
 import GameContent from '../components/GameContent';
 import { VideoData } from '../models/video-data';

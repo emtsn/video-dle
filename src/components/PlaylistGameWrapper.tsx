@@ -123,7 +123,7 @@ export default function PlaylistGameWrapper({ videoData, answerData }: Props): R
         <Content className="main-layout-content">
             <div className="content-holder">
                 <div className="playlist-header">
-                    <h2 style={{ margin: 0 }}>Video #{quizNum + 1}</h2>
+                    <h2>Video #{quizNum + 1}</h2>
                     <Pagination
                         defaultCurrent={quizNum + 1}
                         current={quizNum + 1}

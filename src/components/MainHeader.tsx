@@ -1,41 +1,37 @@
 import React, { useState } from 'react';
 import { Button, Col, Layout, Menu, MenuProps, Row, Space } from 'antd';
 import './MainHeader.scss';
-import { Gamemode } from '../models/gamemode';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlay } from '@fortawesome/free-regular-svg-icons';
 import { faPlay, faShuffle } from '@fortawesome/free-solid-svg-icons';
 import { red } from '@ant-design/colors';
 import { SettingOutlined } from '@ant-design/icons';
 import SettingsMenu from './SettingsMenu';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const { Header } = Layout;
 
 type MenuClickHandler = ({ key }: { key: string }) => void;
 
-type Props = {
-    gamemode: Gamemode;
-    handleChangeGamemode: (gamemode: Gamemode) => void;
-};
-
-export default function MainHeader({ gamemode, handleChangeGamemode }: Props): React.ReactElement {
+export default function MainHeader(): React.ReactElement {
+    const location = useLocation();
+    const navigate = useNavigate();
     const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
     const items: MenuProps['items'] = [
         {
             label: 'Play',
-            key: 'play',
+            key: '/play',
             icon: <FontAwesomeIcon icon={faPlay} />,
         },
         {
             label: 'Random',
-            key: 'random',
+            key: '/random',
             icon: <FontAwesomeIcon icon={faShuffle} />,
         },
     ];
-    const selectedKeys: string[] = gamemode === Gamemode.Random ? ['random'] : ['play'];
+    const selectedKeys: string[] = [location.pathname];
     const handleClick: MenuClickHandler = ({ key }) => {
-        if (key === 'play') handleChangeGamemode(Gamemode.Playlist);
-        else if (key === 'random') handleChangeGamemode(Gamemode.Random);
+        navigate(key);
     };
     return (
         <Header className="main-header">

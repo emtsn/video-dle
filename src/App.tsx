@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Space } from 'antd';
-import { GithubOutlined } from '@ant-design/icons';
-import MainHeader from './components/MainHeader';
+import { RouterProvider, createBrowserRouter, redirect } from 'react-router-dom';
 import PlaylistGameWrapper from './components/PlaylistGameWrapper';
 import RandomGameWrapper from './components/RandomGameWrapper';
 import { VideoData } from './models/video-data';
 import { AnswerData } from './models/answer-data';
-import { Gamemode } from './models/gamemode';
+import PageLayout from './components/PageLayout';
+import ErrorPageContent from './components/ErrorPageContent';
 import './App.scss';
-const { Footer } = Layout;
 
 function App(): React.ReactElement {
-    const [gamemode, setGamemode] = useState<Gamemode>(Gamemode.Playlist);
     const [videoData, setVideoData] = useState<Record<string, VideoData>>({});
     const [answerData, setAnswerData] = useState<AnswerData[] | null>(null);
     useEffect(() => {
@@ -29,24 +26,34 @@ function App(): React.ReactElement {
                 }
             });
     }, []);
-    return (
-        <Layout className="main-layout">
-            <MainHeader gamemode={gamemode} handleChangeGamemode={(gamemode) => setGamemode(gamemode)} />
-            {gamemode === Gamemode.Playlist ? (
-                <PlaylistGameWrapper videoData={videoData} answerData={answerData} />
-            ) : (
-                <RandomGameWrapper videoData={videoData} />
-            )}
-            <Footer>
-                <a className="text-subtext" href="https://github.com/emtsn">
-                    <Space>
-                        <GithubOutlined />
-                        emtsn
-                    </Space>
-                </a>
-            </Footer>
-        </Layout>
-    );
+    const router = createBrowserRouter([
+        {
+            path: '/',
+            loader: () => redirect('/play'),
+            errorElement: (
+                <PageLayout>
+                    <ErrorPageContent />
+                </PageLayout>
+            ),
+        },
+        {
+            path: '/play',
+            element: (
+                <PageLayout>
+                    <PlaylistGameWrapper videoData={videoData} answerData={answerData} />
+                </PageLayout>
+            ),
+        },
+        {
+            path: '/random',
+            element: (
+                <PageLayout>
+                    <RandomGameWrapper videoData={videoData} />
+                </PageLayout>
+            ),
+        },
+    ]);
+    return <RouterProvider router={router} />;
 }
 
 export default App;
